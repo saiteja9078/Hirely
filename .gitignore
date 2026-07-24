@@ -1,25 +1,45 @@
-HELP.md
+# ==========================
+# Maven
+# ==========================
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
+# ==========================
+# Spring Boot
+# ==========================
+HELP.md
+
+# ==========================
+# IntelliJ IDEA
+# ==========================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ==========================
+# Eclipse / STS
+# ==========================
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
+bin/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+# ==========================
+# VS Code
+# ==========================
+.vscode/
 
-### NetBeans ###
+# ==========================
+# NetBeans
+# ==========================
 /nbproject/private/
 /nbbuild/
 /dist/
@@ -29,5 +49,69 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
-.vscode/
+# ==========================
+# macOS
+# ==========================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ==========================
+# Windows
+# ==========================
+Thumbs.db
+Desktop.ini
+
+# ==========================
+# Linux
+# ==========================
+*~
+
+# ==========================
+# Logs
+# ==========================
+*.log
+logs/
+
+# ==========================
+# Environment Variables
+# ==========================
+.env
+.env.*
+!.env.example
+
+# ==========================
+# Local Configuration
+# ==========================
+application-local.properties
+application-local.yml
+application-local.yaml
+application-dev.properties
+application-dev.yml
+application-dev.yaml
+
+# ==========================
+# Java
+# ==========================
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+replay_pid*
+
+# ==========================
+# Coverage / Reports
+# ==========================
+coverage/
+jacoco.exec
+/site/
+
+# ==========================
+# OS Generated Files
+# ==========================
+.directory
+.fuse_hidden*
