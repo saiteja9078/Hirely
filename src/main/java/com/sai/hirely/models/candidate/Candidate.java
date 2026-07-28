@@ -89,9 +89,9 @@ public class Candidate
         this.candidateSkills.add(candidateSkill);
         candidateSkill.setCandidate(this);
     }
-    public void addJobApplication(JobApplication jobApplicaiton) {
-        this.jobApplications.add(jobApplicaiton);
-        jobApplicaiton.setCandidate(this);
+    public void addJobApplication(JobApplication jobApplication) {
+        this.jobApplications.add(jobApplication);
+        jobApplication.setCandidate(this);
     }
     public void addCandidateExperience(CandidateExperience candidateExperience) {
         this.candidateExperiences.add(candidateExperience);

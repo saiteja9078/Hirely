@@ -1,14 +1,12 @@
 package com.sai.hirely.service.candidate;
 
 import com.sai.hirely.dto.candidate.CandidateRequest;
-import com.sai.hirely.dto.candidate.skill.CandidateSkillsProjection;
 import com.sai.hirely.exceptions.candidate.CandidateNotFoundException;
 import com.sai.hirely.models.candidate.Candidate;
 import com.sai.hirely.repository.candidate.CandidateRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 
 @Service
 public class CandidateService {
@@ -42,4 +40,11 @@ public class CandidateService {
         return candidate;
     }
 
+    @Transactional
+    public void deleteCandidate(Long id) throws CandidateNotFoundException {
+        if (!candidateRepo.existsById(id)) {
+            throw new CandidateNotFoundException(id);
+        }
+        candidateRepo.deleteById(id);
+    }
 }

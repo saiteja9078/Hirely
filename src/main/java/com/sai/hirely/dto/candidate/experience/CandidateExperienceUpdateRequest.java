@@ -1,9 +1,9 @@
 package com.sai.hirely.dto.candidate.experience;
 
-public record ExperienceDto(
-        Long roleId,
-        String organizationName,
+public record CandidateExperienceUpdateRequest(
+        Long experienceId,
         Long companyId,
+        String organizationName,
         String description,
         Short experienceInMonths
 ) {

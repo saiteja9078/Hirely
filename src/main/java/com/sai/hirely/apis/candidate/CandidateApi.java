@@ -45,4 +45,10 @@ public class CandidateApi
     )  {
         return ResponseEntity.status(HttpStatus.OK).body(candidateMapper.toResponse(candidateService.updateCandidate(id,request)));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCandidate(@PathVariable Long id) {
+        candidateService.deleteCandidate(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

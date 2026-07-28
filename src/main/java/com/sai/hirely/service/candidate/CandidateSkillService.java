@@ -1,5 +1,5 @@
 package com.sai.hirely.service.candidate;
-import com.sai.hirely.dto.candidate.skill.CandidateSkillsProjection;
+import com.sai.hirely.dto.candidate.skill.CandidateSkillDto;
 import com.sai.hirely.dto.candidate.skill.CandidateSkillsRequest;
 import com.sai.hirely.dto.candidate.skill.CreateSkill;
 import com.sai.hirely.dto.candidate.skill.ExistingSkill;
@@ -37,12 +37,8 @@ public class CandidateSkillService {
         this.requestToViewNameTranslator = requestToViewNameTranslator;
     }
     @Transactional(readOnly = true)
-    public List<CandidateSkillsProjection> findAllByCandidateId(Long candidateId) {
-        List<CandidateSkillsProjection> projections = candidateRepo.findAllCandidateSKills(candidateId);
-        if(projections.isEmpty()) {
-            throw new CandidateNotFoundException(candidateId);
-        }
-        return projections;
+    public List<CandidateSkillDto> findAllByCandidateId(Long candidateId) {
+        return candidateRepo.findAllCandidateSKills(candidateId);
     }
     @Transactional
     public void addSkills( CandidateSkillsRequest skillsRequest) {
@@ -67,8 +63,17 @@ public class CandidateSkillService {
      }
 
     public void updateSkill(CandidateSkillKey candidateSkillId, Proficiency proficiency) {
-        candidateSkillsRepo.findById(candidateSkillId)
-                .orElseThrow(() -> new CandidateSkillNotFoundException(candidateSkillId))
-                .setProficiency(proficiency);
+        CandidateSkill skill = candidateSkillsRepo.findById(candidateSkillId).orElseThrow(
+                () -> new CandidateSkillNotFoundException(candidateSkillId.candidateId(),candidateSkillId.skillId())
+        );
+        skill.setProficiency(proficiency);
+    }
+
+    @Transactional
+    public void deleteSkill(CandidateSkillKey candidateSkillId) {
+        if (!candidateSkillsRepo.existsById(candidateSkillId)) {
+            throw new CandidateSkillNotFoundException(candidateSkillId.candidateId(), candidateSkillId.skillId());
+        }
+        candidateSkillsRepo.deleteById(candidateSkillId);
     }
 }

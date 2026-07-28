@@ -23,7 +23,10 @@ public class RoleEntity
     @SequenceGenerator(name = "role_seq",allocationSize = 50)
     private Long id;
     private String name;
-
     @OneToMany(mappedBy = "role")
     private List<JobPosting> jobPostings;
+    protected RoleEntity(){}
+    public RoleEntity(String name){
+        this.name = name;
+    }
 }

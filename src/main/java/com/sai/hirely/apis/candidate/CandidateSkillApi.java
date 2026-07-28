@@ -1,10 +1,7 @@
 package com.sai.hirely.apis.candidate;
 
-import com.sai.hirely.dto.candidate.skill.CandidateSkillsProjection;
+import com.sai.hirely.dto.candidate.skill.CandidateSkillDto;
 import com.sai.hirely.dto.candidate.skill.CandidateSkillsRequest;
-import com.sai.hirely.dto.candidate.skill.CandidateSkillResponse;
-import com.sai.hirely.mappers.CandidateSkillsMapper;
-import com.sai.hirely.models.candidate.CandidateSkill;
 import com.sai.hirely.models.candidate.CandidateSkillKey;
 import com.sai.hirely.models.enums.Proficiency;
 import com.sai.hirely.service.candidate.CandidateSkillService;
@@ -20,21 +17,17 @@ import java.util.*;
 @RequestMapping("/candidate-skills")
 public class CandidateSkillApi {
     private CandidateSkillService skillService;
-    private CandidateSkillsMapper skillsMapper;
     @Autowired
-    public CandidateSkillApi(CandidateSkillService skillService,CandidateSkillsMapper skillsMapper,) {
+    public CandidateSkillApi(CandidateSkillService skillService) {
         this.skillService = skillService;
-        this.skillsMapper = skillsMapper;
     }
-    @GetMapping("{candidateId}")
-    public ResponseEntity<CandidateSkillResponse> getSkills(@PathVariable Long candidateId)  {
-        List<CandidateSkillsProjection> skills =  skillService.findAllByCandidateId(candidateId);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(skillsMapper.toSkillResponse(skills,candidateId));
+    @GetMapping("/{candidateId}")
+    public ResponseEntity<List<CandidateSkillDto>> getSkills(@PathVariable Long candidateId)  {
+        return ResponseEntity.status(HttpStatus.OK).body(skillService.findAllByCandidateId(candidateId));
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<CandidateSkillResponse> addSkills(@Valid @RequestBody CandidateSkillsRequest skillsRequest) {
+    public void addSkills(@Valid @RequestBody CandidateSkillsRequest skillsRequest) {
          skillService.addSkills(skillsRequest);
     }
     @PatchMapping("/{candidateId}/{skillId}")
@@ -43,5 +36,11 @@ public class CandidateSkillApi {
                             @RequestParam Proficiency proficiency
     ) {
         skillService.updateSkill(new CandidateSkillKey(skillId,candidateId),proficiency);
+    }
+
+    @DeleteMapping("/{candidateId}/{skillId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteSkill(@PathVariable Long candidateId, @PathVariable Long skillId) {
+        skillService.deleteSkill(new CandidateSkillKey(skillId, candidateId));
     }
 }
