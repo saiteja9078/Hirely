@@ -15,11 +15,12 @@ import java.util.Objects;
 public class CandidateSkillKey implements Serializable {
     private Long skillId;
     private Long candidateId;
-    protected CandidateSkillKey() {}
-    protected CandidateSkillKey(Long skillId,Long candidateId) {
+    public CandidateSkillKey() {}
+    public CandidateSkillKey(Long skillId,Long candidateId) {
         this.skillId = skillId;
         this.candidateId = candidateId;
     }
+
     public boolean equals(Object other) {
         if(other == this) return true;
         if(other == null || other.getClass() != getClass()) return false;
@@ -30,4 +31,8 @@ public class CandidateSkillKey implements Serializable {
     public int hashCode() {
         return Objects.hash(skillId,candidateId);
     }
+    public String toString() {
+        return "Candidate Id: " + this.candidateId + "Skill Id: " + this.skillId;
+    }
 }
+

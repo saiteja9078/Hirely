@@ -1,5 +1,4 @@
 package com.sai.hirely.apis.candidate;
-
 import com.sai.hirely.dto.candidate.CandidateRequest;
 import com.sai.hirely.dto.candidate.CandidateResponse;
 import com.sai.hirely.exceptions.candidate.CandidateNotFoundException;
@@ -38,5 +37,12 @@ public class CandidateApi
                                 )
                         )
                 );
+    }
+    @PatchMapping("/{id}")
+    public ResponseEntity<CandidateResponse> updateCandidate(
+            @PathVariable Long id,
+            @RequestBody CandidateRequest request
+    )  {
+        return ResponseEntity.status(HttpStatus.OK).body(candidateMapper.toResponse(candidateService.updateCandidate(id,request)));
     }
 }

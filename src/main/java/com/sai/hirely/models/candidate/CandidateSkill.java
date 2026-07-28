@@ -49,7 +49,7 @@ public class CandidateSkill
             Skill skill,
             Proficiency proficiency
     ) {
-        this.id = new CandidateSkillKey();
+        this.id = new CandidateSkillKey(skill.getId(), candidate.getId());
         this.candidate = candidate;
         this.proficiency = Objects.requireNonNull(proficiency);
         this.skill = skill;

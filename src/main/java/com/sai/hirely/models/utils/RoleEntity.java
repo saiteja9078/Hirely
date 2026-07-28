@@ -8,9 +8,15 @@ import java.util.List;
 
 @Getter
 @Setter
-@Table(name = "roles")
-@Entity
-public class Role
+@Table(
+        name = "roles"
+        ,uniqueConstraints = @UniqueConstraint(
+                name = "unique_role",
+                columnNames = "name"
+)
+)
+@Entity()
+public class RoleEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "role_seq")
@@ -19,5 +25,5 @@ public class Role
     private String name;
 
     @OneToMany(mappedBy = "role")
-    private List<JobPosting> jobApplicationList;
+    private List<JobPosting> jobPostings;
 }

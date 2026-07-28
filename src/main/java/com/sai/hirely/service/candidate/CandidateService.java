@@ -1,12 +1,14 @@
 package com.sai.hirely.service.candidate;
 
+import com.sai.hirely.dto.candidate.CandidateRequest;
+import com.sai.hirely.dto.candidate.skill.CandidateSkillsProjection;
 import com.sai.hirely.exceptions.candidate.CandidateNotFoundException;
 import com.sai.hirely.models.candidate.Candidate;
 import com.sai.hirely.repository.candidate.CandidateRepo;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Service
 public class CandidateService {
@@ -22,8 +24,22 @@ public class CandidateService {
                 () -> new CandidateNotFoundException(id)
         );
     }
+
     @Transactional
     public Candidate addCandidate(Candidate entity) {
         return candidateRepo.save(entity);
     }
+
+    @Transactional
+    public Candidate updateCandidate(Long id, CandidateRequest request) throws CandidateNotFoundException{
+        Candidate candidate = findById(id);
+        candidate.setFirstName(request.firstName());
+        candidate.setLastName(request.lastName());
+        candidate.setAge(request.age());
+        candidate.setGender(request.gender());
+        candidate.setEmail(request.email());
+        candidate.setDescription(request.description());
+        return candidate;
+    }
+
 }

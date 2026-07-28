@@ -2,7 +2,7 @@ package com.sai.hirely.models.job;
 
 import com.sai.hirely.models.company.Company;
 import com.sai.hirely.models.company.HiringManager;
-import com.sai.hirely.models.utils.Role;
+import com.sai.hirely.models.utils.RoleEntity;
 import com.sai.hirely.models.enums.PostingStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -51,7 +51,7 @@ public class JobPosting
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    private Role role;
+    private RoleEntity role;
 
     private String location;
 

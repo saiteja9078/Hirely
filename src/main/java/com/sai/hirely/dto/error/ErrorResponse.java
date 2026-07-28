@@ -6,8 +6,12 @@ import java.time.LocalDateTime;
 
 public record ErrorResponse(
         LocalDateTime timestamp,
-        HttpStatus status,
-        String error,
         String message // to let user know
 ) {
+    public ErrorResponse(String message) {
+        this(
+                LocalDateTime.now(),
+                message
+        );
+    }
 }

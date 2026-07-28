@@ -2,7 +2,7 @@ package com.sai.hirely.models.candidate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sai.hirely.models.company.Company;
-import com.sai.hirely.models.utils.Role;
+import com.sai.hirely.models.utils.RoleEntity;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,7 +28,9 @@ public class CandidateExperience
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    private Role role;
+    private RoleEntity role;
+
+    private String organizationName;
 
     private String description;
 
@@ -46,8 +48,14 @@ public class CandidateExperience
     private Short experienceInMonths;
 
     protected CandidateExperience() {}
-    public CandidateExperience(Role role,Company company,Candidate candidate,Short experienceInMonths) {
+    public CandidateExperience(RoleEntity role,
+                               String organizationName,
+                               Company company,
+                               Candidate candidate,
+                               Short experienceInMonths
+                               ) {
         this.role = role;
+        this.organizationName = organizationName;
         this.company = company;
         this.experienceInMonths = Objects.requireNonNull(experienceInMonths);
         this.candidate = candidate;
