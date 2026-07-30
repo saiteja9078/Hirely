@@ -36,11 +36,26 @@ public class JobSkillRequirement
     @Enumerated(EnumType.STRING)
     private Proficiency proficiency;
 
+    @Column(nullable = false)
+    private boolean required = false;
+
     protected JobSkillRequirement() {}
     public JobSkillRequirement(
         JobPosting posting,
         Skill skill,
-        Proficiency proficiency
+        Proficiency proficiency,
+        boolean required
+    ) {
+        this.jobPosting = posting;
+        this.skill = skill;
+        this.proficiency = proficiency;
+        id = new JobSkillKey();
+        this.required = required;
+    }
+    public JobSkillRequirement(
+            JobPosting posting,
+            Skill skill,
+            Proficiency proficiency
     ) {
         this.jobPosting = posting;
         this.skill = skill;

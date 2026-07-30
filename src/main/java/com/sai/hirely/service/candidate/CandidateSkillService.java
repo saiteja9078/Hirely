@@ -1,10 +1,9 @@
 package com.sai.hirely.service.candidate;
-import com.sai.hirely.dto.candidate.skill.CandidateSkillDto;
-import com.sai.hirely.dto.candidate.skill.CandidateSkillsRequest;
-import com.sai.hirely.dto.candidate.skill.CreateSkill;
-import com.sai.hirely.dto.candidate.skill.ExistingSkill;
-import com.sai.hirely.exceptions.candidate.CandidateNotFoundException;
-import com.sai.hirely.exceptions.candidate.CandidateSkillNotFoundException;
+import com.sai.hirely.dto.skill.candidate.CandidateSkillDto;
+import com.sai.hirely.dto.skill.candidate.CandidateSkillsRequest;
+import com.sai.hirely.dto.skill.CreateSkill;
+import com.sai.hirely.dto.skill.ExistingSkill;
+import com.sai.hirely.exceptions.company.EntityNotFoundException;
 import com.sai.hirely.models.candidate.Candidate;
 import com.sai.hirely.models.candidate.CandidateSkill;
 import com.sai.hirely.models.candidate.CandidateSkillKey;
@@ -44,19 +43,19 @@ public class CandidateSkillService {
     public void addSkills( CandidateSkillsRequest skillsRequest) {
         Candidate candidate = candidateRepo.getReferenceById(skillsRequest.candidateId());
         List<Skill> skillReferences =  skillsRequest.addExistingSkills()
-                            .stream().map((a) -> skillsRepo.getReferenceById(a.id())).toList();
+                            .stream().map((a) -> skillsRepo.getReferenceById(a.getId())).toList();
         List<Skill> createdSkills = skillService.createSkills(skillsRequest.createNewSkills());
         List<CandidateSkill> candidateSkills = new ArrayList<>();
         List<ExistingSkill> existing = skillsRequest.addExistingSkills();
         List<CreateSkill> created = skillsRequest.createNewSkills();
         for(int i=0;i<skillReferences.size();i++) {
             candidateSkills.add(new CandidateSkill(
-                    candidate, skillReferences.get(i),existing.get(i).proficiency()
+                    candidate, skillReferences.get(i),existing.get(i).getProficiency()
             ));
         }
         for(int i=0;i<createdSkills.size();i++) {
             candidateSkills.add(
-                    new CandidateSkill(candidate,createdSkills.get(i),created.get(i).proficiency())
+                    new CandidateSkill(candidate,createdSkills.get(i),created.get(i).getProficiency())
             );
         }
         candidateSkillsRepo.saveAll(candidateSkills);
@@ -64,7 +63,7 @@ public class CandidateSkillService {
 
     public void updateSkill(CandidateSkillKey candidateSkillId, Proficiency proficiency) {
         CandidateSkill skill = candidateSkillsRepo.findById(candidateSkillId).orElseThrow(
-                () -> new CandidateSkillNotFoundException(candidateSkillId.candidateId(),candidateSkillId.skillId())
+                () -> new EntityNotFoundException("CandidateSkill", candidateSkillId)
         );
         skill.setProficiency(proficiency);
     }
@@ -72,7 +71,7 @@ public class CandidateSkillService {
     @Transactional
     public void deleteSkill(CandidateSkillKey candidateSkillId) {
         if (!candidateSkillsRepo.existsById(candidateSkillId)) {
-            throw new CandidateSkillNotFoundException(candidateSkillId.candidateId(), candidateSkillId.skillId());
+            throw new EntityNotFoundException("CandidateSkill", candidateSkillId);
         }
         candidateSkillsRepo.deleteById(candidateSkillId);
     }

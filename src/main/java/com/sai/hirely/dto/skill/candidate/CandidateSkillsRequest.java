@@ -1,5 +1,7 @@
-package com.sai.hirely.dto.candidate.skill;
+package com.sai.hirely.dto.skill.candidate;
 
+import com.sai.hirely.dto.skill.CreateSkill;
+import com.sai.hirely.dto.skill.ExistingSkill;
 import jakarta.validation.constraints.NotNull;
 
 

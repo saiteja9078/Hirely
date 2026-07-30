@@ -3,6 +3,8 @@ package com.sai.hirely.models.candidate;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sai.hirely.models.enums.Gender;
 import com.sai.hirely.models.job.JobApplication;
+import com.sai.hirely.models.utils.Location;
+import com.sai.hirely.models.utils.RoleEntity;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -55,6 +57,23 @@ public class Candidate
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Embedded
+    private Location location;
+
+
+    // have to implement this
+//    @OneToOne
+//    @JoinColumn(name = "desired_role_id")
+//    private RoleEntity desiredJobRole;
+
+//    @OneToOne
+//    @JoinColumn(name = "current_role_id")
+//    private RoleEntity currentRole;
+
+
+
+
 
     @OneToMany(mappedBy = "candidate",cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnore

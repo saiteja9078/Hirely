@@ -2,7 +2,7 @@ package com.sai.hirely.repository.candidate;
 
 import java.util.List;
 
-import com.sai.hirely.dto.candidate.skill.CandidateSkillDto;
+import com.sai.hirely.dto.skill.candidate.CandidateSkillDto;
 import com.sai.hirely.models.candidate.Candidate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

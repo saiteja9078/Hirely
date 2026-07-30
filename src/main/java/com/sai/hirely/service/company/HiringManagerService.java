@@ -1,13 +1,13 @@
 package com.sai.hirely.service.company;
 
 import com.sai.hirely.dto.company.HiringManagerRequest;
-import com.sai.hirely.exceptions.company.HiringManagerNotFoundException;
 import com.sai.hirely.models.company.Department;
 import com.sai.hirely.models.company.HiringManager;
 import com.sai.hirely.repository.company.HiringManagerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.sai.hirely.exceptions.company.EntityNotFoundException;
 
 @Service
 public class HiringManagerService {
@@ -21,9 +21,9 @@ public class HiringManagerService {
     }
 
     @Transactional(readOnly = true)
-    public HiringManager findById(Long id) throws HiringManagerNotFoundException {
+    public HiringManager findById(Long id) throws EntityNotFoundException {
         return hiringManagerRepo.findById(id).orElseThrow(
-                () -> new HiringManagerNotFoundException(id)
+                () -> new EntityNotFoundException("HiringManager", id)
         );
     }
 
@@ -37,7 +37,7 @@ public class HiringManagerService {
     }
 
     @Transactional
-    public HiringManager updateHiringManager(Long id, HiringManagerRequest request) throws HiringManagerNotFoundException {
+    public HiringManager updateHiringManager(Long id, HiringManagerRequest request) throws EntityNotFoundException {
         HiringManager manager = findById(id);
         manager.setFirstName(request.firstName());
         manager.setLastName(request.lastName());
@@ -53,9 +53,9 @@ public class HiringManagerService {
     }
 
     @Transactional
-    public void deleteHiringManager(Long id) throws HiringManagerNotFoundException {
+    public void deleteHiringManager(Long id) throws EntityNotFoundException {
         if (!hiringManagerRepo.existsById(id)) {
-            throw new HiringManagerNotFoundException(id);
+            throw new EntityNotFoundException("HiringManager", id);
         }
         hiringManagerRepo.deleteById(id);
     }

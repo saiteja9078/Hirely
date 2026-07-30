@@ -1,5 +1,7 @@
 package com.sai.hirely.models.company;
 
+import com.sai.hirely.models.job.Industry;
+import com.sai.hirely.models.utils.Location;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +23,13 @@ public class Company
     private String name;
 
     private String companyProfileUrl;
+
+    @ManyToOne
+    @JoinColumn(name = "industry_id")
+    private Industry industry;
+
+    @Embedded
+    private Location location;
 
     @OneToMany(mappedBy = "company",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Department> departments;

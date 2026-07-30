@@ -32,9 +32,7 @@ public class CompanyApi {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(
                         companyMapper.toResponse(
-                                companyService.addCompany(
-                                        companyMapper.toEntity(request)
-                                )
+                                companyService.addCompany(request)
                         )
                 );
     }

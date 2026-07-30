@@ -1,46 +1,62 @@
 package com.sai.hirely.service.company;
 
 import com.sai.hirely.dto.company.CompanyRequest;
-import com.sai.hirely.exceptions.company.CompanyNotFoundException;
 import com.sai.hirely.models.company.Company;
 import com.sai.hirely.repository.company.CompanyRepo;
+import com.sai.hirely.repository.job.IndustryRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.sai.hirely.exceptions.company.EntityNotFoundException;
 
 @Service
 public class CompanyService {
     private final CompanyRepo companyRepo;
+    private final IndustryRepo industryRepo;
 
     @Autowired
-    public CompanyService(CompanyRepo companyRepo) {
+    public CompanyService(CompanyRepo companyRepo, IndustryRepo industryRepo) {
         this.companyRepo = companyRepo;
+        this.industryRepo = industryRepo;
     }
 
     @Transactional(readOnly = true)
-    public Company findById(Long id) throws CompanyNotFoundException {
+    public Company findById(Long id) throws EntityNotFoundException {
         return companyRepo.findById(id).orElseThrow(
-                () -> new CompanyNotFoundException(id)
+                () -> new EntityNotFoundException("Company", id)
         );
     }
 
     @Transactional
-    public Company addCompany(Company entity) {
-        return companyRepo.save(entity);
+    public Company addCompany(CompanyRequest request) {
+        Company company = new Company();
+        company.setName(request.name());
+        company.setCompanyProfileUrl(request.companyProfileUrl());
+        company.setLocation(request.location());
+        if (request.industryId() != null) {
+            company.setIndustry(industryRepo.getReferenceById(request.industryId()));
+        }
+        return companyRepo.save(company);
     }
 
     @Transactional
-    public Company updateCompany(Long id, CompanyRequest request) throws CompanyNotFoundException {
+    public Company updateCompany(Long id, CompanyRequest request) throws EntityNotFoundException {
         Company company = findById(id);
         company.setName(request.name());
         company.setCompanyProfileUrl(request.companyProfileUrl());
+        company.setLocation(request.location());
+        
+        if (request.industryId() != null && (company.getIndustry() == null || !company.getIndustry().getId().equals(request.industryId()))) {
+            company.setIndustry(industryRepo.getReferenceById(request.industryId()));
+        }
+        
         return company;
     }
 
     @Transactional
-    public void deleteCompany(Long id) throws CompanyNotFoundException {
+    public void deleteCompany(Long id) throws EntityNotFoundException {
         if (!companyRepo.existsById(id)) {
-            throw new CompanyNotFoundException(id);
+            throw new EntityNotFoundException("Company", id);
         }
         companyRepo.deleteById(id);
     }

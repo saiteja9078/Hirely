@@ -1,5 +1,6 @@
 package com.sai.hirely.models.utils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sai.hirely.models.job.JobPosting;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -24,6 +25,7 @@ public class RoleEntity
     private Long id;
     private String name;
     @OneToMany(mappedBy = "role")
+    @JsonIgnore
     private List<JobPosting> jobPostings;
     protected RoleEntity(){}
     public RoleEntity(String name){

@@ -1,7 +1,7 @@
 package com.sai.hirely.apis.candidate;
 
-import com.sai.hirely.dto.candidate.skill.CandidateSkillDto;
-import com.sai.hirely.dto.candidate.skill.CandidateSkillsRequest;
+import com.sai.hirely.dto.skill.candidate.CandidateSkillDto;
+import com.sai.hirely.dto.skill.candidate.CandidateSkillsRequest;
 import com.sai.hirely.models.candidate.CandidateSkillKey;
 import com.sai.hirely.models.enums.Proficiency;
 import com.sai.hirely.service.candidate.CandidateSkillService;

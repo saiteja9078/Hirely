@@ -1,6 +1,6 @@
 package com.sai.hirely.service.role;
 
-import com.sai.hirely.exceptions.candidate.RoleNotFoundException;
+import com.sai.hirely.exceptions.company.EntityNotFoundException;
 import com.sai.hirely.models.utils.RoleEntity;
 import com.sai.hirely.repository.role.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class RoleService {
     }
     @Transactional(readOnly = true)
     public RoleEntity findById(Long id) {
-        return repo.findById(id).orElseThrow(() -> new RoleNotFoundException(id));
+        return repo.findById(id).orElseThrow(() -> new EntityNotFoundException("Role", id));
     }
     @Transactional(readOnly = true)
     public List<RoleEntity> findByIds(List<Long> ids) {

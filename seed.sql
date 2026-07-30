@@ -16,18 +16,22 @@ INSERT INTO roles (id, name) VALUES
 (10, 'Site Reliability Engineer');
 ALTER SEQUENCE role_seq RESTART WITH 100;
 
+-- 2.5 Industries
+INSERT INTO industries (id, name) VALUES
+(1, 'Technology'), (2, 'Finance'), (3, 'Healthcare'), (4, 'E-commerce'), (5, 'Automotive');
+
 -- 3. Companies
-INSERT INTO companies (id, name, company_profile_url) VALUES
-(1, 'Google', 'https://careers.google.com/'),
-(2, 'Microsoft', 'https://careers.microsoft.com/'),
-(3, 'Amazon', 'https://amazon.jobs/'),
-(4, 'Meta', 'https://www.metacareers.com/'),
-(5, 'Apple', 'https://www.apple.com/careers/'),
-(6, 'Netflix', 'https://jobs.netflix.com/'),
-(7, 'Uber', 'https://www.uber.com/careers/'),
-(8, 'Airbnb', 'https://careers.airbnb.com/'),
-(9, 'Stripe', 'https://stripe.com/jobs/'),
-(10, 'Tesla', 'https://www.tesla.com/careers/');
+INSERT INTO companies (id, name, company_profile_url, country, state, city, industry_id) VALUES
+(1, 'Google', 'https://careers.google.com/', 'USA', 'California', 'Mountain View', 1),
+(2, 'Microsoft', 'https://careers.microsoft.com/', 'USA', 'Washington', 'Redmond', 1),
+(3, 'Amazon', 'https://amazon.jobs/', 'USA', 'Washington', 'Seattle', 4),
+(4, 'Meta', 'https://www.metacareers.com/', 'USA', 'California', 'Menlo Park', 1),
+(5, 'Apple', 'https://www.apple.com/careers/', 'USA', 'California', 'Cupertino', 1),
+(6, 'Netflix', 'https://jobs.netflix.com/', 'USA', 'California', 'Los Gatos', 1),
+(7, 'Uber', 'https://www.uber.com/careers/', 'USA', 'California', 'San Francisco', 1),
+(8, 'Airbnb', 'https://careers.airbnb.com/', 'USA', 'California', 'San Francisco', 1),
+(9, 'Stripe', 'https://stripe.com/jobs/', 'USA', 'California', 'San Francisco', 2),
+(10, 'Tesla', 'https://www.tesla.com/careers/', 'USA', 'Texas', 'Austin', 5);
 ALTER SEQUENCE company_seq RESTART WITH 100;
 
 -- 4. Departments
@@ -79,27 +83,27 @@ INSERT INTO hiring_managers (id, first_name, last_name, gender, email, departmen
 ALTER SEQUENCE hr_seq RESTART WITH 100;
 
 -- 6. Candidates
-INSERT INTO candidates (id, first_name, last_name, age, profile_picture_url, gender, password, email, description) VALUES
-(1, 'Alexander', 'Wright', 29, 'https://example.com/profiles/alexander.wright.png', 'MALE', 'pass1', 'alexander.wright@example.com', 'Passionate developer.'),
-(2, 'Emily', 'Walker', 31, 'https://example.com/profiles/emily.walker.png', 'FEMALE', 'pass2', 'emily.walker@example.com', 'Data enthusiast.'),
-(3, 'Henry', 'Young', 25, 'https://example.com/profiles/henry.young.png', 'MALE', 'pass3', 'henry.young@example.com', 'Cloud engineer.'),
-(4, 'Olivia', 'Allen', 34, 'https://example.com/profiles/olivia.allen.png', 'FEMALE', 'pass4', 'olivia.allen@example.com', 'Product oriented.'),
-(5, 'Sebastian', 'King', 28, 'https://example.com/profiles/sebastian.king.png', 'MALE', 'pass5', 'sebastian.king@example.com', 'Frontend specialist.'),
-(6, 'Sophia', 'Scott', 40, 'https://example.com/profiles/sophia.scott.png', 'FEMALE', 'pass6', 'sophia.scott@example.com', 'Backend architect.'),
-(7, 'Jack', 'Torres', 36, 'https://example.com/profiles/jack.torres.png', 'MALE', 'pass7', 'jack.torres@example.com', 'Full stack guru.'),
-(8, 'Isabella', 'Nguyen', 27, 'https://example.com/profiles/isabella.nguyen.png', 'FEMALE', 'pass8', 'isabella.nguyen@example.com', 'AI researcher.'),
-(9, 'Julian', 'Hill', 45, 'https://example.com/profiles/julian.hill.png', 'MALE', 'pass9', 'julian.hill@example.com', 'QA leader.'),
-(10, 'Mia', 'Flores', 33, 'https://example.com/profiles/mia.flores.png', 'FEMALE', 'pass10', 'mia.flores@example.com', 'SRE expert.'),
-(11, 'Levi', 'Green', 26, 'https://example.com/profiles/levi.green.png', 'MALE', 'pass11', 'levi.green@example.com', 'Junior dev.'),
-(12, 'Charlotte', 'Adams', 30, 'https://example.com/profiles/charlotte.adams.png', 'FEMALE', 'pass12', 'charlotte.adams@example.com', 'Mid-level backend.'),
-(13, 'Owen', 'Nelson', 38, 'https://example.com/profiles/owen.nelson.png', 'MALE', 'pass13', 'owen.nelson@example.com', 'Data architect.'),
-(14, 'Amelia', 'Baker', 24, 'https://example.com/profiles/amelia.baker.png', 'FEMALE', 'pass14', 'amelia.baker@example.com', 'Recent graduate.'),
-(15, 'Wyatt', 'Hall', 32, 'https://example.com/profiles/wyatt.hall.png', 'MALE', 'pass15', 'wyatt.hall@example.com', 'Security engineer.'),
-(16, 'Harper', 'Rivera', 29, 'https://example.com/profiles/harper.rivera.png', 'FEMALE', 'pass16', 'harper.rivera@example.com', 'UI/UX developer.'),
-(17, 'Carter', 'Campbell', 35, 'https://example.com/profiles/carter.campbell.png', 'MALE', 'pass17', 'carter.campbell@example.com', 'Tech lead.'),
-(18, 'Evelyn', 'Mitchell', 41, 'https://example.com/profiles/evelyn.mitchell.png', 'FEMALE', 'pass18', 'evelyn.mitchell@example.com', 'VP of Engineering.'),
-(19, 'Luke', 'Carter', 27, 'https://example.com/profiles/luke.carter.png', 'MALE', 'pass19', 'luke.carter@example.com', 'System admin.'),
-(20, 'Abigail', 'Roberts', 31, 'https://example.com/profiles/abigail.roberts.png', 'FEMALE', 'pass20', 'abigail.roberts@example.com', 'Data analyst.');
+INSERT INTO candidates (id, first_name, last_name, age, profile_picture_url, gender, password, email, description, country, state, city) VALUES
+(1, 'Alexander', 'Wright', 29, 'https://example.com/profiles/alexander.wright.png', 'MALE', 'pass1', 'alexander.wright@example.com', 'Passionate developer.', 'USA', 'California', 'San Francisco'),
+(2, 'Emily', 'Walker', 31, 'https://example.com/profiles/emily.walker.png', 'FEMALE', 'pass2', 'emily.walker@example.com', 'Data enthusiast.', 'USA', 'New York', 'New York'),
+(3, 'Henry', 'Young', 25, 'https://example.com/profiles/henry.young.png', 'MALE', 'pass3', 'henry.young@example.com', 'Cloud engineer.', 'USA', 'Texas', 'Austin'),
+(4, 'Olivia', 'Allen', 34, 'https://example.com/profiles/olivia.allen.png', 'FEMALE', 'pass4', 'olivia.allen@example.com', 'Product oriented.', 'USA', 'Washington', 'Seattle'),
+(5, 'Sebastian', 'King', 28, 'https://example.com/profiles/sebastian.king.png', 'MALE', 'pass5', 'sebastian.king@example.com', 'Frontend specialist.', 'USA', 'Illinois', 'Chicago'),
+(6, 'Sophia', 'Scott', 40, 'https://example.com/profiles/sophia.scott.png', 'FEMALE', 'pass6', 'sophia.scott@example.com', 'Backend architect.', 'USA', 'California', 'San Jose'),
+(7, 'Jack', 'Torres', 36, 'https://example.com/profiles/jack.torres.png', 'MALE', 'pass7', 'jack.torres@example.com', 'Full stack guru.', 'USA', 'Colorado', 'Denver'),
+(8, 'Isabella', 'Nguyen', 27, 'https://example.com/profiles/isabella.nguyen.png', 'FEMALE', 'pass8', 'isabella.nguyen@example.com', 'AI researcher.', 'USA', 'Massachusetts', 'Boston'),
+(9, 'Julian', 'Hill', 45, 'https://example.com/profiles/julian.hill.png', 'MALE', 'pass9', 'julian.hill@example.com', 'QA leader.', 'USA', 'Georgia', 'Atlanta'),
+(10, 'Mia', 'Flores', 33, 'https://example.com/profiles/mia.flores.png', 'FEMALE', 'pass10', 'mia.flores@example.com', 'SRE expert.', 'USA', 'Texas', 'Dallas'),
+(11, 'Levi', 'Green', 26, 'https://example.com/profiles/levi.green.png', 'MALE', 'pass11', 'levi.green@example.com', 'Junior dev.', 'USA', 'Florida', 'Miami'),
+(12, 'Charlotte', 'Adams', 30, 'https://example.com/profiles/charlotte.adams.png', 'FEMALE', 'pass12', 'charlotte.adams@example.com', 'Mid-level backend.', 'USA', 'California', 'Los Angeles'),
+(13, 'Owen', 'Nelson', 38, 'https://example.com/profiles/owen.nelson.png', 'MALE', 'pass13', 'owen.nelson@example.com', 'Data architect.', 'USA', 'Nevada', 'Las Vegas'),
+(14, 'Amelia', 'Baker', 24, 'https://example.com/profiles/amelia.baker.png', 'FEMALE', 'pass14', 'amelia.baker@example.com', 'Recent graduate.', 'USA', 'Oregon', 'Portland'),
+(15, 'Wyatt', 'Hall', 32, 'https://example.com/profiles/wyatt.hall.png', 'MALE', 'pass15', 'wyatt.hall@example.com', 'Security engineer.', 'USA', 'Arizona', 'Phoenix'),
+(16, 'Harper', 'Rivera', 29, 'https://example.com/profiles/harper.rivera.png', 'FEMALE', 'pass16', 'harper.rivera@example.com', 'UI/UX developer.', 'USA', 'Michigan', 'Detroit'),
+(17, 'Carter', 'Campbell', 35, 'https://example.com/profiles/carter.campbell.png', 'MALE', 'pass17', 'carter.campbell@example.com', 'Tech lead.', 'USA', 'North Carolina', 'Charlotte'),
+(18, 'Evelyn', 'Mitchell', 41, 'https://example.com/profiles/evelyn.mitchell.png', 'FEMALE', 'pass18', 'evelyn.mitchell@example.com', 'VP of Engineering.', 'USA', 'Pennsylvania', 'Philadelphia'),
+(19, 'Luke', 'Carter', 27, 'https://example.com/profiles/luke.carter.png', 'MALE', 'pass19', 'luke.carter@example.com', 'System admin.', 'USA', 'Ohio', 'Columbus'),
+(20, 'Abigail', 'Roberts', 31, 'https://example.com/profiles/abigail.roberts.png', 'FEMALE', 'pass20', 'abigail.roberts@example.com', 'Data analyst.', 'USA', 'Indiana', 'Indianapolis');
 ALTER SEQUENCE candidate_seq RESTART WITH 100;
 
 -- 7. Candidate Skills
@@ -151,60 +155,59 @@ INSERT INTO candidate_experiences (id, role_id, organization_name, description, 
 ALTER SEQUENCE candidate_exp_seq RESTART WITH 100;
 
 -- 9. Job Postings
-INSERT INTO job_postings (id, title, description, salary_lower, salary_higher, status, hiring_manager_id, role_id, location, company_id, posted_at, expires_at) VALUES
-(1, 'Senior Java Developer', 'Looking for an experienced Java developer.', 140000, 180000, 'OPENED', 1, 1, 'Mountain View, CA', 1, '2023-01-01 10:00:00', '2024-12-31 23:59:59'),
-(2, 'Data Scientist II', 'Join our AI team to build the future.', 130000, 190000, 'OPENED', 3, 2, 'Remote', 1, '2023-02-01 10:00:00', '2024-12-31 23:59:59'),
-(3, 'DevOps Engineer', 'Help us scale our infrastructure.', 120000, 160000, 'OPENED', 4, 4, 'Redmond, WA', 2, '2023-03-01 10:00:00', '2024-12-31 23:59:59'),
-(4, 'Frontend Developer (React)', 'Build beautiful UIs.', 110000, 150000, 'OPENED', 7, 5, 'Seattle, WA', 3, '2023-04-01 10:00:00', '2024-12-31 23:59:59'),
-(5, 'Machine Learning Engineer', 'Work on GenAI models.', 160000, 220000, 'OPENED', 10, 8, 'Menlo Park, CA', 4, '2023-05-01 10:00:00', '2024-12-31 23:59:59'),
-(6, 'Backend Engineer (Go)', 'High performance systems.', 135000, 175000, 'OPENED', 13, 6, 'Cupertino, CA', 5, '2023-06-01 10:00:00', '2024-12-31 23:59:59'),
-(7, 'Full Stack Engineer', 'End-to-end streaming features.', 145000, 185000, 'OPENED', 16, 7, 'Los Gatos, CA', 6, '2023-07-01 10:00:00', '2024-12-31 23:59:59'),
-(8, 'Site Reliability Engineer', 'Ensure 99.99% uptime.', 150000, 190000, 'OPENED', 19, 10, 'San Francisco, CA', 7, '2023-08-01 10:00:00', '2024-12-31 23:59:59'),
-(9, 'Product Manager', 'Drive product strategy.', 130000, 180000, 'OPENED', 22, 3, 'San Francisco, CA', 8, '2023-09-01 10:00:00', '2024-12-31 23:59:59'),
-(10, 'Staff QA Engineer', 'Lead automation testing.', 125000, 165000, 'OPENED', 25, 9, 'Remote', 9, '2023-10-01 10:00:00', '2024-12-31 23:59:59'),
-(11, 'Backend Developer', 'Autopilot infrastructure.', 140000, 190000, 'OPENED', 28, 6, 'Palo Alto, CA', 10, '2023-11-01 10:00:00', '2024-12-31 23:59:59'),
-(12, 'Junior Java Developer', 'Entry level engineering role.', 80000, 110000, 'OPENED', 2, 1, 'Mountain View, CA', 1, '2023-11-15 10:00:00', '2024-12-31 23:59:59'),
-(13, 'Senior Data Scientist', 'Lead data analytics.', 160000, 210000, 'OPENED', 9, 2, 'Seattle, WA', 3, '2023-12-01 10:00:00', '2024-12-31 23:59:59'),
-(14, 'React Native Developer', 'Mobile apps.', 120000, 160000, 'OPENED', 11, 5, 'Remote', 4, '2023-12-15 10:00:00', '2024-12-31 23:59:59'),
-(15, 'Cloud Architect', 'Design AWS environments.', 170000, 230000, 'OPENED', 14, 4, 'Austin, TX', 5, '2023-12-20 10:00:00', '2024-12-31 23:59:59');
+INSERT INTO job_postings (
+    id,
+    title,
+    description,
+    salary_lower,
+    salary_higher,
+    minimum_experience_in_months,
+    status,
+    hiring_manager_id,
+    role_id,
+    country,
+    state,
+    city,
+    company_id,
+    posted_at,
+    expires_at
+) VALUES
+      (1, 'Senior Java Developer', 'Looking for an experienced Java developer.', 140000, 180000, 60, 'OPENED', 1, 1, 'USA', 'California', 'Mountain View', 1, '2023-01-01 10:00:00', '2024-12-31 23:59:59'),
+      (2, 'Data Scientist II', 'Join our AI team to build the future.', 130000, 190000, 48, 'OPENED', 3, 2, 'USA', 'Any', 'Remote', 1, '2023-02-01 10:00:00', '2024-12-31 23:59:59'),
+      (3, 'DevOps Engineer', 'Help us scale our infrastructure.', 120000, 160000, 36, 'OPENED', 4, 4, 'USA', 'Washington', 'Redmond', 2, '2023-03-01 10:00:00', '2024-12-31 23:59:59'),
+      (4, 'Frontend Developer (React)', 'Build beautiful UIs.', 110000, 150000, 36, 'OPENED', 7, 5, 'USA', 'Washington', 'Seattle', 3, '2023-04-01 10:00:00', '2024-12-31 23:59:59'),
+      (5, 'Machine Learning Engineer', 'Work on GenAI models.', 160000, 220000, 60, 'OPENED', 10, 8, 'USA', 'California', 'Menlo Park', 4, '2023-05-01 10:00:00', '2024-12-31 23:59:59'),
+      (6, 'Backend Engineer (Go)', 'High performance systems.', 135000, 175000, 48, 'OPENED', 13, 6, 'USA', 'California', 'Cupertino', 5, '2023-06-01 10:00:00', '2024-12-31 23:59:59'),
+      (7, 'Full Stack Engineer', 'End-to-end streaming features.', 145000, 185000, 48, 'OPENED', 16, 7, 'USA', 'California', 'Los Gatos', 6, '2023-07-01 10:00:00', '2024-12-31 23:59:59'),
+      (8, 'Site Reliability Engineer', 'Ensure 99.99% uptime.', 150000, 190000, 60, 'OPENED', 19, 10, 'USA', 'California', 'San Francisco', 7, '2023-08-01 10:00:00', '2024-12-31 23:59:59'),
+      (9, 'Product Manager', 'Drive product strategy.', 130000, 180000, 48, 'OPENED', 22, 3, 'USA', 'California', 'San Francisco', 8, '2023-09-01 10:00:00', '2024-12-31 23:59:59'),
+      (10, 'Staff QA Engineer', 'Lead automation testing.', 125000, 165000, 84, 'OPENED', 25, 9, 'USA', 'Any', 'Remote', 9, '2023-10-01 10:00:00', '2024-12-31 23:59:59'),
+      (11, 'Backend Developer', 'Autopilot infrastructure.', 140000, 190000, 48, 'OPENED', 28, 6, 'USA', 'California', 'Palo Alto', 10, '2023-11-01 10:00:00', '2024-12-31 23:59:59'),
+      (12, 'Junior Java Developer', 'Entry level engineering role.', 80000, 110000, 0, 'OPENED', 2, 1, 'USA', 'California', 'Mountain View', 1, '2023-11-15 10:00:00', '2024-12-31 23:59:59'),
+      (13, 'Senior Data Scientist', 'Lead data analytics.', 160000, 210000, 84, 'OPENED', 9, 2, 'USA', 'Washington', 'Seattle', 3, '2023-12-01 10:00:00', '2024-12-31 23:59:59'),
+      (14, 'React Native Developer', 'Mobile apps.', 120000, 160000, 36, 'OPENED', 11, 5, 'USA', 'Any', 'Remote', 4, '2023-12-15 10:00:00', '2024-12-31 23:59:59'),
+      (15, 'Cloud Architect', 'Design AWS environments.', 170000, 230000, 96, 'OPENED', 14, 4, 'USA', 'Texas', 'Austin', 5, '2023-12-20 10:00:00', '2024-12-31 23:59:59');
+
 ALTER SEQUENCE job_posting_seq RESTART WITH 100;
 
 -- 10. Job Skills
-INSERT INTO job_skills (job_posting_id, skill_id, proficiency) VALUES
-(1, 1, 'EXPERT'), (1, 2, 'EXPERT'), (1, 4, 'INTERMEDIATE'),
-(2, 6, 'EXPERT'), (2, 4, 'EXPERT'), (2, 5, 'INTERMEDIATE'),
-(3, 7, 'EXPERT'), (3, 8, 'EXPERT'), (3, 5, 'EXPERT'), (3, 14, 'INTERMEDIATE'),
-(4, 3, 'EXPERT'), (4, 11, 'EXPERT'), (4, 10, 'BEGINNER'),
-(5, 6, 'EXPERT'), (5, 9, 'INTERMEDIATE'),
-(6, 13, 'EXPERT'), (6, 18, 'INTERMEDIATE'),
-(7, 3, 'EXPERT'), (7, 10, 'EXPERT'), (7, 11, 'EXPERT'), (7, 18, 'INTERMEDIATE'),
-(8, 7, 'EXPERT'), (8, 5, 'EXPERT'), (8, 6, 'INTERMEDIATE'),
-(9, 4, 'BEGINNER'),
-(10, 1, 'INTERMEDIATE'), (10, 6, 'INTERMEDIATE'),
-(11, 9, 'EXPERT'), (11, 6, 'INTERMEDIATE'),
-(12, 1, 'BEGINNER'), (12, 2, 'BEGINNER'),
-(13, 6, 'EXPERT'), (13, 4, 'EXPERT'), (13, 18, 'EXPERT'),
-(14, 3, 'EXPERT'), (14, 11, 'EXPERT'),
-(15, 5, 'EXPERT'), (15, 14, 'EXPERT'), (15, 7, 'EXPERT');
+INSERT INTO job_skills (job_posting_id, skill_id, proficiency, required) VALUES
+(1, 1, 'EXPERT', true), (1, 2, 'EXPERT', true), (1, 4, 'INTERMEDIATE', false),
+(2, 6, 'EXPERT', true), (2, 4, 'EXPERT', true), (2, 5, 'INTERMEDIATE', false),
+(3, 7, 'EXPERT', true), (3, 8, 'EXPERT', true), (3, 5, 'EXPERT', true), (3, 14, 'INTERMEDIATE', false),
+(4, 3, 'EXPERT', true), (4, 11, 'EXPERT', true), (4, 10, 'BEGINNER', false),
+(5, 6, 'EXPERT', true), (5, 9, 'INTERMEDIATE', false),
+(6, 13, 'EXPERT', true), (6, 18, 'INTERMEDIATE', false),
+(7, 3, 'EXPERT', true), (7, 10, 'EXPERT', true), (7, 11, 'EXPERT', true), (7, 18, 'INTERMEDIATE', false),
+(8, 7, 'EXPERT', true), (8, 5, 'EXPERT', true), (8, 6, 'INTERMEDIATE', false),
+(9, 4, 'BEGINNER', true),
+(10, 1, 'INTERMEDIATE', true), (10, 6, 'INTERMEDIATE', true),
+(11, 9, 'EXPERT', true), (11, 6, 'INTERMEDIATE', false),
+(12, 1, 'BEGINNER', true), (12, 2, 'BEGINNER', true),
+(13, 6, 'EXPERT', true), (13, 4, 'EXPERT', true), (13, 18, 'EXPERT', true),
+(14, 3, 'EXPERT', true), (14, 11, 'EXPERT', true),
+(15, 5, 'EXPERT', true), (15, 14, 'EXPERT', true), (15, 7, 'EXPERT', true);
 
--- 11. Job Experiences
-INSERT INTO job_experiences (id, job_posting_id, role_id, experience_in_months) VALUES
-(1, 1, 1, 60),
-(2, 2, 2, 48),
-(3, 3, 4, 36),
-(4, 4, 5, 36),
-(5, 5, 8, 60),
-(6, 6, 6, 48),
-(7, 7, 7, 48),
-(8, 8, 10, 60),
-(9, 9, 3, 48),
-(10, 10, 9, 84),
-(11, 11, 6, 48),
-(12, 12, 1, 0),
-(13, 13, 2, 84),
-(14, 14, 5, 36),
-(15, 15, 4, 96);
-ALTER SEQUENCE job_experience_requirement_seq RESTART WITH 100;
 
 -- 12. Job Applications
 INSERT INTO job_applications (id, status, applied_at, candidate_id, job_posting_id) VALUES

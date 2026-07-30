@@ -2,8 +2,10 @@ package com.sai.hirely.models.job;
 
 import com.sai.hirely.models.company.Company;
 import com.sai.hirely.models.company.HiringManager;
+import com.sai.hirely.models.utils.Location;
 import com.sai.hirely.models.utils.RoleEntity;
 import com.sai.hirely.models.enums.PostingStatus;
+import com.sai.hirely.models.utils.WorkMode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,8 +41,8 @@ public class JobPosting
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private Integer salaryLower;
-    private Integer salaryHigher;
+    private int salaryLower=0;
+    private int salaryHigher=0;
 
     @Enumerated(EnumType.STRING)
     private PostingStatus status;
@@ -53,11 +55,17 @@ public class JobPosting
     @JoinColumn(name = "role_id")
     private RoleEntity role;
 
-    private String location;
+    @Embedded
+    private Location location;
 
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
+
+    @Enumerated(EnumType.STRING)
+    private WorkMode workMode;
+
+    private Integer minimumExperienceInMonths;
 
     @CreatedDate
     private LocalDateTime postedAt;
@@ -67,18 +75,11 @@ public class JobPosting
     private Set<JobSkillRequirement> skillRequirements = new HashSet<>();
 
     @OneToMany(mappedBy = "jobPosting", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Set<JobExperienceRequirement> experienceRequirements = new HashSet<>();
-
-    @OneToMany(mappedBy = "jobPosting", orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<JobApplication> jobApplications = new HashSet<>();
 
     public void addSkillRequirement(JobSkillRequirement skillRequirement) {
         this.skillRequirements.add(skillRequirement);
         skillRequirement.setJobPosting(this);
-    }
-    public void addExperienceRequirement(JobExperienceRequirement experienceRequirement) {
-        this.experienceRequirements.add(experienceRequirement);
-        experienceRequirement.setJobPosting(this);
     }
     public void addApplication(JobApplication application) {
         this.jobApplications.add(application);

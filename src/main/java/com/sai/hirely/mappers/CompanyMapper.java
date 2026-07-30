@@ -9,4 +9,5 @@ import org.mapstruct.Mapper;
 public interface CompanyMapper {
     CompanyResponse toResponse(Company company);
     Company toEntity(CompanyRequest request);
+    com.sai.hirely.dto.job.IndustryDto toIndustryDto(com.sai.hirely.models.job.Industry industry);
 }

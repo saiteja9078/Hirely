@@ -1,13 +1,13 @@
 package com.sai.hirely.service.company;
 
 import com.sai.hirely.dto.company.DepartmentRequest;
-import com.sai.hirely.exceptions.company.DepartmentNotFoundException;
 import com.sai.hirely.models.company.Company;
 import com.sai.hirely.models.company.Department;
 import com.sai.hirely.repository.company.DepartmentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.sai.hirely.exceptions.company.EntityNotFoundException;
 
 @Service
 public class DepartmentService {
@@ -21,9 +21,9 @@ public class DepartmentService {
     }
 
     @Transactional(readOnly = true)
-    public Department findById(Long id) throws DepartmentNotFoundException {
+    public Department findById(Long id) throws EntityNotFoundException {
         return departmentRepo.findById(id).orElseThrow(
-                () -> new DepartmentNotFoundException(id)
+                () -> new EntityNotFoundException("Department", id)
         );
     }
 
@@ -37,7 +37,7 @@ public class DepartmentService {
     }
 
     @Transactional
-    public Department updateDepartment(Long id, DepartmentRequest request) throws DepartmentNotFoundException {
+    public Department updateDepartment(Long id, DepartmentRequest request) throws EntityNotFoundException {
         Department department = findById(id);
         department.setName(request.name());
         
@@ -50,9 +50,9 @@ public class DepartmentService {
     }
 
     @Transactional
-    public void deleteDepartment(Long id) throws DepartmentNotFoundException {
+    public void deleteDepartment(Long id) throws EntityNotFoundException {
         if (!departmentRepo.existsById(id)) {
-            throw new DepartmentNotFoundException(id);
+            throw new EntityNotFoundException("Department", id);
         }
         departmentRepo.deleteById(id);
     }

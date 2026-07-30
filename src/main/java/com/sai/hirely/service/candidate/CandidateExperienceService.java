@@ -1,6 +1,7 @@
 package com.sai.hirely.service.candidate;
 import com.sai.hirely.dto.candidate.experience.*;
-import com.sai.hirely.exceptions.candidate.CandidateExperienceNotFoundException;
+import com.sai.hirely.exceptions.company.EntityNotFoundException;
+import com.sai.hirely.mappers.CandidateExperienceMapper;
 import com.sai.hirely.models.candidate.Candidate;
 import com.sai.hirely.models.candidate.CandidateExperience;
 import com.sai.hirely.models.utils.RoleEntity;
@@ -79,7 +80,7 @@ public class CandidateExperienceService {
 
     @Transactional
     public CandidateExperienceResponse updateExperience(CandidateExperienceUpdateRequest experienceRequest) {
-        CandidateExperience experience = experienceRepo.findById(experienceRequest.experienceId()).orElseThrow(() -> new CandidateExperienceNotFoundException(experienceRequest.experienceId()));
+        CandidateExperience experience = experienceRepo.findById(experienceRequest.experienceId()).orElseThrow(() -> new EntityNotFoundException("CandidateExperience", experienceRequest.experienceId()));
         experience.setCompany(companyRepo.getReferenceById(experienceRequest.companyId()));
         experience.setDescription(experienceRequest.description());
         experience.setOrganizationName(experienceRequest.organizationName());
@@ -90,7 +91,7 @@ public class CandidateExperienceService {
     @Transactional
     public void deleteExperience(Long experienceId) {
         if (!experienceRepo.existsById(experienceId)) {
-            throw new CandidateExperienceNotFoundException(experienceId);
+            throw new EntityNotFoundException("CandidateExperience", experienceId);
         }
         experienceRepo.deleteById(experienceId);
     }

@@ -17,7 +17,7 @@ public class JobSkillKey implements Serializable
     @Override
     public boolean equals(Object o) {
         if(o == this) return true;
-        if(o != null && o.getClass() != getClass()) return false;
+        if(o == null || o.getClass() != getClass()) return false;
         JobSkillKey other = (JobSkillKey)o;
         return this.jobPostingId.equals(other.jobPostingId)
                 && this.skillId.equals(other.skillId);

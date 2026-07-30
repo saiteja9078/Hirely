@@ -1,6 +1,5 @@
 package com.sai.hirely.repository.candidate;
 
-import com.sai.hirely.dto.candidate.experience.CandidateExperienceResponse;
 import com.sai.hirely.models.candidate.CandidateExperience;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,5 +20,5 @@ public interface CandidateExperienceRepo extends JpaRepository<CandidateExperien
                                 ex.experienceInMonths)
              from CandidateExperience ex where ex.candidate.id =:candidateId
     """)
-    List<CandidateExperienceResponse> findByCandidateId(Long candidateId);
+    List<CandidateExperience> findByCandidateId(Long candidateId);
 }
