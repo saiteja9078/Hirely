@@ -1,4 +1,4 @@
-package com.sai.hirely.service.job.posting;
+package com.sai.hirely.service.job;
 
 import com.sai.hirely.dto.job.JobCard;
 import com.sai.hirely.dto.job.JobFilterRequest;
@@ -10,7 +10,7 @@ import com.sai.hirely.models.job.JobSkillRequirement;
 import com.sai.hirely.models.utils.Skill;
 import com.sai.hirely.repository.company.CompanyRepo;
 import com.sai.hirely.repository.company.HiringManagerRepo;
-import com.sai.hirely.repository.job.posting.JobPostingRepo;
+import com.sai.hirely.repository.job.JobPostingRepo;
 import com.sai.hirely.repository.role.RoleRepo;
 import com.sai.hirely.repository.skill.JobSkillRequirementRepo;
 import com.sai.hirely.repository.skill.SkillRepo;
@@ -108,5 +108,13 @@ public class JobPostingService {
 
     public Page<JobCard> getPage(JobFilterRequest filterRequest, Pageable pageable) {
         return jobCaRepo.getJobCards(pageable,filterRequest);
+    }
+
+    @Transactional
+    public void deleteJobPosting(Long id) throws EntityNotFoundException {
+        if (!postingRepo.existsById(id)) {
+            throw new EntityNotFoundException("JobPosting", id);
+        }
+        postingRepo.deleteById(id);
     }
 }

@@ -1,10 +1,12 @@
 package com.sai.hirely.service.skill;
 
+import com.sai.hirely.dto.SkillResponse;
 import com.sai.hirely.dto.skill.CreateSkill;
 import com.sai.hirely.exceptions.company.EntityNotFoundException;
 import com.sai.hirely.models.utils.Skill;
 import com.sai.hirely.repository.skill.SkillRepo;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +18,7 @@ public class SkillService {
 
     private SkillRepo skillRepo;
 
-    public SkillService(SkillRepo repo) {
+    public SkillService(SkillRepo repo, RepositoryMethodInvocationListener repositoryMethodInvocationListener) {
         this.skillRepo = repo;
     }
 
@@ -36,6 +38,10 @@ public class SkillService {
             }
         }
         return sKills;
+    }
+    @Transactional(readOnly = true)
+    public List<SkillResponse> findAll() {
+        return skillRepo.findAllProjectedBy();
     }
 
     @Transactional(readOnly = true)

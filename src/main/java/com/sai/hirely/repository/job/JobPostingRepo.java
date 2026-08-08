@@ -1,7 +1,6 @@
-package com.sai.hirely.repository.job.posting;
+package com.sai.hirely.repository.job;
 
 import com.sai.hirely.models.job.JobPosting;
-import jakarta.persistence.EntityManager;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;

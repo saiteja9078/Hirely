@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sai.hirely.models.enums.Gender;
 import com.sai.hirely.models.job.JobApplication;
 import com.sai.hirely.models.utils.Location;
+import com.sai.hirely.models.utils.Resume;
 import com.sai.hirely.models.utils.RoleEntity;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
@@ -61,6 +62,10 @@ public class Candidate
     @Embedded
     private Location location;
 
+    @OneToMany(mappedBy = "candidate",cascade = CascadeType.ALL)
+    private Set<Resume> resumes;
+
+    // have to add preferred job location
 
     // have to implement this
 //    @OneToOne
@@ -70,10 +75,6 @@ public class Candidate
 //    @OneToOne
 //    @JoinColumn(name = "current_role_id")
 //    private RoleEntity currentRole;
-
-
-
-
 
     @OneToMany(mappedBy = "candidate",cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnore
@@ -86,6 +87,7 @@ public class Candidate
     @OneToMany(mappedBy = "candidate",cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnore
     private Set<JobApplication> jobApplications = new HashSet<>();
+
     protected Candidate() {}
 
     public Candidate(

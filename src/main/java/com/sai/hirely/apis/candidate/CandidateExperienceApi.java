@@ -3,7 +3,6 @@ package com.sai.hirely.apis.candidate;
 import com.sai.hirely.dto.candidate.experience.CandidateExperienceRequest;
 import com.sai.hirely.dto.candidate.experience.CandidateExperienceResponse;
 import com.sai.hirely.dto.candidate.experience.CandidateExperienceUpdateRequest;
-import com.sai.hirely.models.candidate.CandidateExperience;
 import com.sai.hirely.service.candidate.CandidateExperienceService;
 import com.sai.hirely.service.candidate.CandidateService;
 import jakarta.servlet.annotation.HttpConstraint;

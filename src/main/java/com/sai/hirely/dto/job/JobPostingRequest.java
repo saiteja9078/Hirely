@@ -1,6 +1,4 @@
 package com.sai.hirely.dto.job;
-import com.sai.hirely.dto.skill.CreateSkill;
-import com.sai.hirely.dto.skill.ExistingSkill;
 import com.sai.hirely.dto.skill.job.JobCreateSkill;
 import com.sai.hirely.dto.skill.job.JobExistingSkill;
 import com.sai.hirely.models.enums.PostingStatus;

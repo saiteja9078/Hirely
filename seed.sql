@@ -1,4 +1,3 @@
--- Massive Seed Data for Hirely Application
 
 -- 1. Skills
 INSERT INTO skills (id, name) VALUES

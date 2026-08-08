@@ -14,7 +14,7 @@ spring:
       max-lifetime: 1800000
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
@@ -24,5 +24,28 @@ spring:
         jdbc:
           batch_size: 25
         format_sql: true
-
-
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
+      file-size-threshold: 2KB
+management:
+  endpoints:
+    web:
+      exposure:
+        include: mappings
+app:
+  upload:
+    resume:
+      root-dir: uploads
+      max-file-size: 10MB
+      allowed-file-types:
+        - application/pdf
+        - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+    image:
+      max-file-size: 1MB
+      allowed-file-types:
+        - image/png
+        - image/jpeg
+        - image/webp
