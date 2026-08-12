@@ -7,6 +7,7 @@ public record CompanyResponse(
         Long id,
         String name,
         String companyProfileUrl,
+        String email,
         Location location,
         IndustryDto industry
 ) {

@@ -1,14 +1,29 @@
 package com.sai.hirely.apis;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/test")
 public class TestController {
-    @GetMapping
+    @GetMapping("/test")
     public String test() {
         return "Success";
+    }
+    @GetMapping("/api/test")
+    public String testApiEnd() {
+        return  "Api end authenticated";
+    }
+    @GetMapping("/api/admin/test")
+    public String testAdmin() {
+        return "Admin endpoint testing";
+    }
+    @GetMapping("/api/user/test")
+    public String testUser() {
+        return "Testing user endpoint";
+    }
+    @PostMapping("/api/admin/test")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String testPostAdmin() {
+        return "Created something";
     }
 }

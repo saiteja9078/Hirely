@@ -19,7 +19,7 @@ import java.util.ArrayDeque;
 import java.util.List;
 
 @RestController
-@RequestMapping("/post-job")
+@RequestMapping("/api/post-job")
 public class JobApi {
     private final JobPostingMapper jobPostingMapper;
     private final JobPostingService postingService;

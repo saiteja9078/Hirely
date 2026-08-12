@@ -5,14 +5,13 @@ import com.sai.hirely.dto.candidate.experience.CandidateExperienceResponse;
 import com.sai.hirely.dto.candidate.experience.CandidateExperienceUpdateRequest;
 import com.sai.hirely.service.candidate.CandidateExperienceService;
 import com.sai.hirely.service.candidate.CandidateService;
-import jakarta.servlet.annotation.HttpConstraint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/candidate-experiences")
+@RequestMapping("/api/candidate-experiences")
 public class CandidateExperienceApi {
     private final CandidateService candidateService;
     private final CandidateExperienceService candidateExperienceService;

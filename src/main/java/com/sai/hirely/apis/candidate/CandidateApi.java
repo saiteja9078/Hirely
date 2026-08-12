@@ -10,11 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/candidates")
+@RequestMapping("/api/candidates")
 public class CandidateApi
 {
     private CandidateService candidateService;
     private CandidateMapper candidateMapper;
+
     @Autowired
     public CandidateApi(CandidateService candidateService, CandidateMapper candidateMapper) {
         this.candidateService = candidateService;

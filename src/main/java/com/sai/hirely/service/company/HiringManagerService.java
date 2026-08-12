@@ -5,6 +5,7 @@ import com.sai.hirely.models.company.Department;
 import com.sai.hirely.models.company.HiringManager;
 import com.sai.hirely.repository.company.HiringManagerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.sai.hirely.exceptions.company.EntityNotFoundException;
@@ -13,11 +14,13 @@ import com.sai.hirely.exceptions.company.EntityNotFoundException;
 public class HiringManagerService {
     private final HiringManagerRepo hiringManagerRepo;
     private final DepartmentService departmentService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public HiringManagerService(HiringManagerRepo hiringManagerRepo, DepartmentService departmentService) {
+    public HiringManagerService(HiringManagerRepo hiringManagerRepo, DepartmentService departmentService, PasswordEncoder passwordEncoder) {
         this.hiringManagerRepo = hiringManagerRepo;
         this.departmentService = departmentService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional(readOnly = true)
@@ -33,6 +36,9 @@ public class HiringManagerService {
             Department department = departmentService.findById(departmentId);
             entity.setHiringDepartment(department);
         }
+        if (entity.getPassword() != null && !entity.getPassword().isEmpty()) {
+            entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+        }
         return hiringManagerRepo.save(entity);
     }
 
@@ -43,6 +49,9 @@ public class HiringManagerService {
         manager.setLastName(request.lastName());
         manager.setGender(request.gender());
         manager.setEmail(request.email());
+        if (request.password() != null && !request.password().isEmpty()) {
+            manager.setPassword(passwordEncoder.encode(request.password()));
+        }
 
         if (request.departmentId() != null && (manager.getHiringDepartment() == null || !manager.getHiringDepartment().getId().equals(request.departmentId()))) {
             Department department = departmentService.findById(request.departmentId());

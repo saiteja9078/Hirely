@@ -5,6 +5,7 @@ import com.sai.hirely.models.company.Company;
 import com.sai.hirely.repository.company.CompanyRepo;
 import com.sai.hirely.repository.job.IndustryRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.sai.hirely.exceptions.company.EntityNotFoundException;
@@ -13,11 +14,13 @@ import com.sai.hirely.exceptions.company.EntityNotFoundException;
 public class CompanyService {
     private final CompanyRepo companyRepo;
     private final IndustryRepo industryRepo;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public CompanyService(CompanyRepo companyRepo, IndustryRepo industryRepo) {
+    public CompanyService(CompanyRepo companyRepo, IndustryRepo industryRepo, PasswordEncoder passwordEncoder) {
         this.companyRepo = companyRepo;
         this.industryRepo = industryRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional(readOnly = true)
@@ -33,6 +36,10 @@ public class CompanyService {
         company.setName(request.name());
         company.setCompanyProfileUrl(request.companyProfileUrl());
         company.setLocation(request.location());
+        company.setEmail(request.email());
+        if (request.password() != null && !request.password().isEmpty()) {
+            company.setPassword(passwordEncoder.encode(request.password()));
+        }
         if (request.industryId() != null) {
             company.setIndustry(industryRepo.getReferenceById(request.industryId()));
         }
@@ -45,6 +52,10 @@ public class CompanyService {
         company.setName(request.name());
         company.setCompanyProfileUrl(request.companyProfileUrl());
         company.setLocation(request.location());
+        company.setEmail(request.email());
+        if (request.password() != null && !request.password().isEmpty()) {
+            company.setPassword(passwordEncoder.encode(request.password()));
+        }
         
         if (request.industryId() != null && (company.getIndustry() == null || !company.getIndustry().getId().equals(request.industryId()))) {
             company.setIndustry(industryRepo.getReferenceById(request.industryId()));

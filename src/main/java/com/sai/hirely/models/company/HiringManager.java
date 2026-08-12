@@ -24,7 +24,9 @@ public class HiringManager
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
     private String email;
+    private String password;
 
     @ManyToOne
     @JoinColumn(name = "department_id")

@@ -49,4 +49,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> payloadTooLarge(RuntimeException e)  {
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(new ErrorResponse(e.getMessage()));
     }
+    @ExceptionHandler(
+            EmailNotFounctException.class
+    )
+    public ResponseEntity<ErrorResponse> emailNotFoundException(RuntimeException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(exception.getMessage()));
+    }
 }

@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.List;
 
 @RestController
-@RequestMapping("/files/upload")
+@RequestMapping("/api/files/upload")
 public class FileUploadApi {
 
     private final StorageService fileStorageService;

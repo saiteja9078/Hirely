@@ -5,16 +5,19 @@ import com.sai.hirely.exceptions.company.EntityNotFoundException;
 import com.sai.hirely.models.candidate.Candidate;
 import com.sai.hirely.repository.candidate.CandidateRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CandidateService {
 
-    private CandidateRepo candidateRepo;
+    private final CandidateRepo candidateRepo;
+    private final PasswordEncoder encoder;
     @Autowired
-    public CandidateService(CandidateRepo candidateRepo) {
+    public CandidateService(CandidateRepo candidateRepo,PasswordEncoder encoder) {
         this.candidateRepo = candidateRepo;
+        this.encoder = encoder;
     }
     @Transactional(readOnly = true)
     public Candidate findById(Long id) throws EntityNotFoundException{
@@ -22,12 +25,11 @@ public class CandidateService {
                 () -> new EntityNotFoundException("Candidate", id)
         );
     }
-
     @Transactional
     public Candidate addCandidate(Candidate entity) {
+        entity.setPassword(encoder.encode(entity.getPassword()));
         return candidateRepo.save(entity);
     }
-
     @Transactional
     public Candidate updateCandidate(Long id, CandidateRequest request) throws EntityNotFoundException{
         Candidate candidate = findById(id);

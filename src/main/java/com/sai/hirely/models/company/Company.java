@@ -24,6 +24,9 @@ public class Company
 
     private String companyProfileUrl;
 
+    private String email;
+    private String password;
+
     @ManyToOne
     @JoinColumn(name = "industry_id")
     private Industry industry;

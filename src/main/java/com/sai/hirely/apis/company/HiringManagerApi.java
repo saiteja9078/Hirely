@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/hiring-managers")
+@RequestMapping("/api/hiring-managers")
 public class HiringManagerApi {
     private final HiringManagerService hiringManagerService;
     private final HiringManagerMapper hiringManagerMapper;

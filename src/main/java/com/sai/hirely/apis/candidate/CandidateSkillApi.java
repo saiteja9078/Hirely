@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/candidate-skills")
+@RequestMapping("/api/candidate-skills")
 public class CandidateSkillApi {
     private CandidateSkillService skillService;
     @Autowired

@@ -49,3 +49,12 @@ app:
         - image/png
         - image/jpeg
         - image/webp
+  jwt:
+    secret-base64: $@%WETSRGWGfgkjsbfisjdf # atleast 256 bits
+    expirationMs: 60000
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

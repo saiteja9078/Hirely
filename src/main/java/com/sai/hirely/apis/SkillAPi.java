@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/skills")
+@RequestMapping("/api/skills")
 public class SkillAPi {
 
     private final SkillService skillService;
@@ -16,7 +16,6 @@ public class SkillAPi {
     public SkillAPi(SkillService skillService) {
         this.skillService = skillService;
     }
-
     @GetMapping
     public List<SkillResponse> findAllSkills() {
         return skillService.findAll();
