@@ -21,6 +21,8 @@ public record JobPostingRequest(
         List<JobExistingSkill> existingSkills,
         List<JobCreateSkill> createSkills,
         Location location,
-        com.sai.hirely.models.utils.WorkMode workMode
+        com.sai.hirely.models.utils.WorkMode workMode,
+        Short workingHoursPerDay,
+        com.sai.hirely.models.utils.JobType type
 ) {
 }

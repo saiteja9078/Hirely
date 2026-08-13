@@ -20,10 +20,11 @@ public class CompanyDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Company company = repo.findByEmail(username).orElseThrow(() -> new EmailNotFounctException("Email: "+username+" not found"));
         return new CustomUserDetails(
+                company.getId(),
                 company.getEmail(),
                 company.getPassword(),
-                List.of(new SimpleGrantedAuthority("HIRING_MANAGER")),
-                AccountType.HIRING_MANAGER
+                List.of(new SimpleGrantedAuthority("ROLE_COMPANY")),
+                AccountType.COMPANY
         );
     }
 }

@@ -5,6 +5,7 @@ public record CandidateExperienceUpdateRequest(
         Long companyId,
         String organizationName,
         String description,
-        Short experienceInMonths
+        java.time.LocalDateTime fromDate,
+        java.time.LocalDateTime toDate
 ) {
 }

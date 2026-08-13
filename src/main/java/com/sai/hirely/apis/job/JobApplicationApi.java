@@ -22,9 +22,10 @@ public class JobApplicationApi {
     @ResponseStatus(HttpStatus.CREATED)
     public void apply(
             @RequestParam Long jobId,
-            @RequestParam Long candidateId
+            @RequestParam Long candidateId,
+            @RequestParam(required = false) String coverLetter
     ) {
-        applicationService.apply(jobId,candidateId);
+        applicationService.apply(jobId, candidateId, coverLetter);
     }
 
     @DeleteMapping("/{id}")

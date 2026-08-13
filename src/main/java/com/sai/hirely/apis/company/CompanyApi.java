@@ -27,15 +27,7 @@ public class CompanyApi {
                 .body(companyMapper.toResponse(companyService.findById(id)));
     }
 
-    @PostMapping
-    public ResponseEntity<CompanyResponse> addCompany(@RequestBody CompanyRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(
-                        companyMapper.toResponse(
-                                companyService.addCompany(request)
-                        )
-                );
-    }
+
 
     @PatchMapping("/{id}")
     public ResponseEntity<CompanyResponse> updateCompany(

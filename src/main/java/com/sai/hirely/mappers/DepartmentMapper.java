@@ -6,7 +6,7 @@ import com.sai.hirely.models.company.Department;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {CompanyMapper.class})
+@Mapper(componentModel = "spring", uses = {CompanyMapper.class}, unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface DepartmentMapper {
     DepartmentResponse toResponse(Department department);
     

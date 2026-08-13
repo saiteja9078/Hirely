@@ -26,7 +26,9 @@ public record JobPostingResponse(
         LocalDateTime expiresAt,
         Location location,
         RoleDto role,
-        com.sai.hirely.models.utils.WorkMode workMode
+        com.sai.hirely.models.utils.WorkMode workMode,
+        Short workingHoursPerDay,
+        com.sai.hirely.models.utils.JobType type
 ) {
 
 

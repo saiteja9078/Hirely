@@ -37,7 +37,6 @@ public class JobApi {
             ) {
         ResponseEntity<JobPostingResponse> jobPosting =  ResponseEntity.status(HttpStatus.OK)
                 .body(jobPostingMapper.toResponse(postingService.createJobPosting(request)));
-        // emailService.sendEmail(posting)
         return jobPosting;
     }
     @GetMapping("/{jobId}")

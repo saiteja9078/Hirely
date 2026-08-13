@@ -6,7 +6,8 @@ public record ExistingExperienceDto(
         @NotNull Long roleId,
         Long companyId,
         String organizationName,
-        Short experienceInMonths,
+        @NotNull java.time.LocalDateTime fromDate,
+        java.time.LocalDateTime toDate,
         @NotNull String description
 ) {
 

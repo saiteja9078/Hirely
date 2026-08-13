@@ -17,8 +17,11 @@ public interface CandidateExperienceRepo extends JpaRepository<CandidateExperien
                         ex.company.id,
                         ex.company.name,
                             ex.description,
-                                ex.experienceInMonths)
+                                ex.fromDate,
+                                ex.toDate)
              from CandidateExperience ex where ex.candidate.id =:candidateId
     """)
     List<CandidateExperience> findByCandidateId(Long candidateId);
+
+    boolean existsByCandidateIdAndCompanyId(Long candidateId, Long companyId);
 }

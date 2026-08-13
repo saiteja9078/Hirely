@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -45,19 +47,25 @@ public class CandidateExperience
 
     @Column(nullable = false)
     @Nonnull
-    private Short experienceInMonths;
+    private LocalDateTime fromDate;
 
-    protected CandidateExperience() {}
+    private LocalDateTime toDate;
+
+    protected CandidateExperience() {
+
+    }
     public CandidateExperience(RoleEntity role,
                                String organizationName,
                                Company company,
                                Candidate candidate,
-                               Short experienceInMonths
+                               LocalDateTime fromDate,
+                               LocalDateTime toDate
                                ) {
         this.role = role;
         this.organizationName = organizationName;
         this.company = company;
-        this.experienceInMonths = Objects.requireNonNull(experienceInMonths);
+        this.fromDate = Objects.requireNonNull(fromDate);
+        this.toDate = toDate;
         this.candidate = candidate;
     }
 }

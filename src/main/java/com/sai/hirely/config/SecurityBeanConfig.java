@@ -1,4 +1,4 @@
-package com.sai.hirely.security;
+package com.sai.hirely.config;
 import com.sai.hirely.security.details.CandidateDetailsService;
 import com.sai.hirely.security.details.CompanyDetailsService;
 import com.sai.hirely.security.details.HiringManagerDetailsService;

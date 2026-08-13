@@ -1,0 +1,6 @@
+- Password rest -> for not include last password entering to reset
+  later well implement email based validation
+- Object level security one instance should not be able to modify another instance.
+- jwt token logout / revoking
+- send mails to candidates only if they are eligible.
+- add education details

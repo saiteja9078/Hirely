@@ -8,7 +8,8 @@ public record CreateExperienceDto(
         Long companyId,
         String organizationName,
         String description,
-        @NotNull  Short experienceInMonths
+        @NotNull java.time.LocalDateTime fromDate,
+        java.time.LocalDateTime toDate
 ) {
 
 }

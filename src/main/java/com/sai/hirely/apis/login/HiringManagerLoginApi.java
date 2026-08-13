@@ -14,24 +14,50 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/login/hiring-manager")
 public class HiringManagerLoginApi {
     private final JwtService jwtService;
     private final DaoAuthenticationProvider authenticationProvider;
+    private final com.sai.hirely.service.company.HiringManagerService hiringManagerService;
+    private final com.sai.hirely.mappers.HiringManagerMapper hiringManagerMapper;
 
     public HiringManagerLoginApi(JwtService jwtService,
-                             @Qualifier("hiringManagerAuthenticationProvider") DaoAuthenticationProvider authenticationProvider) {
+                             @Qualifier("hiringManagerAuthenticationProvider") DaoAuthenticationProvider authenticationProvider,
+                             com.sai.hirely.service.company.HiringManagerService hiringManagerService,
+                             com.sai.hirely.mappers.HiringManagerMapper hiringManagerMapper) {
         this.jwtService = jwtService;
         this.authenticationProvider = authenticationProvider;
+        this.hiringManagerService = hiringManagerService;
+        this.hiringManagerMapper = hiringManagerMapper;
     }
-    @PostMapping
-    public ResponseEntity<AuthenticationResponse> candidateLogin(
+
+    @PostMapping("/login/hiring-manager")
+    public ResponseEntity<AuthenticationResponse> hiringManagerLogin(
             @Valid @RequestBody AuthenticationRequest request
     ) {
         Authentication auth = authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(
                 request.username(),request.password()
         ));
         String token = jwtService.generateToken((CustomUserDetails) auth.getPrincipal());
-        return ResponseEntity.status(HttpStatus.OK).body(new AuthenticationResponse(token));
+        return ResponseEntity.status(HttpStatus.OK).body(new AuthenticationResponse(token, request.username()));
+    }
+
+    @PostMapping("/signup/hiring-manager")
+    public ResponseEntity<AuthenticationResponse> hiringManagerSignUp(
+            @RequestBody com.sai.hirely.dto.auth.HiringManagerSignupRequest request
+    ) {
+        com.sai.hirely.models.company.HiringManager savedManager = hiringManagerService.addHiringManager(
+                hiringManagerMapper.toEntity(request),
+                request.departmentId()
+        );
+        CustomUserDetails userDetails = new CustomUserDetails(
+                savedManager.getId(),
+                savedManager.getEmail(),
+                savedManager.getPassword(),
+                java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_HIRING_MANAGER")),
+                com.sai.hirely.security.details.AccountType.HIRING_MANAGER
+        );
+        String token = jwtService.generateToken(userDetails);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new AuthenticationResponse(token, savedManager.getEmail()));
     }
 }

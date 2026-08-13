@@ -37,7 +37,11 @@ public class JobPostingService {
     private final RoleRepo roleRepo;
     private final EntityManager entityManager;
     private final JobCriteriaApiRepo jobCaRepo;
-    public JobPostingService(JobPostingRepo postingRepo,JobCriteriaApiRepo jobCaRepo, SkillService skillService, CompanyRepo companyRepo, HiringManagerRepo hrRepo, JobSkillRequirementRepo jobSkillRequirementRepo, SkillRepo skillRepo, RoleRepo roleRepo, EntityManager entityManager) {
+    private final com.sai.hirely.service.email.EmailService emailService;
+    private final com.sai.hirely.repository.candidate.CandidateInterestsRepo candidateInterestsRepo;
+    private final com.sai.hirely.repository.candidate.CandidateRepo candidateRepo;
+
+    public JobPostingService(JobPostingRepo postingRepo, JobCriteriaApiRepo jobCaRepo, SkillService skillService, CompanyRepo companyRepo, HiringManagerRepo hrRepo, JobSkillRequirementRepo jobSkillRequirementRepo, SkillRepo skillRepo, RoleRepo roleRepo, EntityManager entityManager, com.sai.hirely.service.email.EmailService emailService, com.sai.hirely.repository.candidate.CandidateInterestsRepo candidateInterestsRepo, com.sai.hirely.repository.candidate.CandidateRepo candidateRepo) {
         this.postingRepo = postingRepo;
         this.skillService = skillService;
         this.companyRepo = companyRepo;
@@ -47,6 +51,9 @@ public class JobPostingService {
         this.roleRepo = roleRepo;
         this.entityManager = entityManager;
         this.jobCaRepo = jobCaRepo;
+        this.emailService = emailService;
+        this.candidateInterestsRepo = candidateInterestsRepo;
+        this.candidateRepo = candidateRepo;
     }
     @Transactional
     public JobPosting createJobPosting(JobPostingRequest request) {
@@ -81,7 +88,20 @@ public class JobPostingService {
         entityManager.flush();
         entityManager.clear();
 
-        return findFullJobDetails(posting.getId());
+        JobPosting fullPosting = findFullJobDetails(posting.getId());
+
+        // Notify candidates with matching role interests
+        if (fullPosting.getRole() != null) {
+            List<com.sai.hirely.service.candidate.CandidateInterests> interests = 
+                candidateInterestsRepo.findByIdRoleId(fullPosting.getRole().getId());
+            for (com.sai.hirely.service.candidate.CandidateInterests interest : interests) {
+                candidateRepo.findById(interest.getId().getCandidateId()).ifPresent(candidate -> {
+                    emailService.sendJobPostedEmail(candidate.getEmail(), candidate.getFirstName(), fullPosting);
+                });
+            }
+        }
+
+        return fullPosting;
     }
 
     public JobPosting getJobPosting(JobPostingRequest request) {

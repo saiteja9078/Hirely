@@ -4,6 +4,7 @@ import com.sai.hirely.dto.candidate.CandidateRequest;
 import com.sai.hirely.exceptions.company.EntityNotFoundException;
 import com.sai.hirely.models.candidate.Candidate;
 import com.sai.hirely.repository.candidate.CandidateRepo;
+import com.sai.hirely.service.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,13 @@ public class CandidateService {
 
     private final CandidateRepo candidateRepo;
     private final PasswordEncoder encoder;
+    private final EmailService emailService;
+
     @Autowired
-    public CandidateService(CandidateRepo candidateRepo,PasswordEncoder encoder) {
+    public CandidateService(CandidateRepo candidateRepo, PasswordEncoder encoder, EmailService emailService) {
         this.candidateRepo = candidateRepo;
         this.encoder = encoder;
+        this.emailService = emailService;
     }
     @Transactional(readOnly = true)
     public Candidate findById(Long id) throws EntityNotFoundException{
@@ -28,7 +32,9 @@ public class CandidateService {
     @Transactional
     public Candidate addCandidate(Candidate entity) {
         entity.setPassword(encoder.encode(entity.getPassword()));
-        return candidateRepo.save(entity);
+        Candidate savedCandidate = candidateRepo.save(entity);
+        emailService.sendWelcomeEmail(savedCandidate.getEmail(), savedCandidate.getFirstName(), "Candidate");
+        return savedCandidate;
     }
     @Transactional
     public Candidate updateCandidate(Long id, CandidateRequest request) throws EntityNotFoundException{

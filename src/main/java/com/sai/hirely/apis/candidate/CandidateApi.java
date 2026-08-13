@@ -26,19 +26,7 @@ public class CandidateApi
         return ResponseEntity.status(HttpStatus.OK)
                 .body(candidateMapper.toResponse(candidateService.findById(id)));
     }
-    @PostMapping
-    public ResponseEntity<CandidateResponse> addCandidate(
-            @RequestBody CandidateRequest request
-    ) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(
-                        candidateMapper.toResponse(
-                                candidateService.addCandidate(
-                                        candidateMapper.toEntity(request)
-                                )
-                        )
-                );
-    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<CandidateResponse> updateCandidate(
             @PathVariable Long id,

@@ -49,7 +49,9 @@ public abstract class JobPostingMapper {
                         posting.getRole().getId(),
                         posting.getRole().getName()
                 ),
-                posting.getWorkMode()
+                posting.getWorkMode(),
+                posting.getWorkingHoursPerDay(),
+                posting.getType()
         );
     }
 }

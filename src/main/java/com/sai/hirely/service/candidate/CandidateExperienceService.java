@@ -58,7 +58,8 @@ public class CandidateExperienceService {
                         experienceDto.organizationName(),
                         experienceDto.companyId() != null ? companyRepo.getReferenceById(experienceDto.companyId()) : null,
                         candidate,
-                        experienceDto.experienceInMonths()
+                        experienceDto.fromDate(),
+                        experienceDto.toDate()
                 ));
         }
         for (ExistingExperienceDto experienceDto : existingDtos) {
@@ -68,7 +69,8 @@ public class CandidateExperienceService {
                     experienceDto.organizationName(),
                     experienceDto.companyId() != null ? companyRepo.getReferenceById(experienceDto.companyId()) : null,
                     candidate,
-                    experienceDto.experienceInMonths()
+                    experienceDto.fromDate(),
+                    experienceDto.toDate()
             ));
         }
         experienceRepo.saveAll(experiences);
@@ -81,10 +83,15 @@ public class CandidateExperienceService {
     @Transactional
     public CandidateExperienceResponse updateExperience(CandidateExperienceUpdateRequest experienceRequest) {
         CandidateExperience experience = experienceRepo.findById(experienceRequest.experienceId()).orElseThrow(() -> new EntityNotFoundException("CandidateExperience", experienceRequest.experienceId()));
-        experience.setCompany(companyRepo.getReferenceById(experienceRequest.companyId()));
+        if (experienceRequest.companyId() != null) {
+            experience.setCompany(companyRepo.getReferenceById(experienceRequest.companyId()));
+        } else {
+            experience.setCompany(null);
+        }
         experience.setDescription(experienceRequest.description());
         experience.setOrganizationName(experienceRequest.organizationName());
-        experience.setExperienceInMonths(experienceRequest.experienceInMonths());
+        experience.setFromDate(experienceRequest.fromDate());
+        experience.setToDate(experienceRequest.toDate());
         return experienceMapper.toResponse(experience);
     }
 

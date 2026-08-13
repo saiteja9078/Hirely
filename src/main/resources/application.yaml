@@ -1,4 +1,15 @@
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: akagami.no.shanks71821@gmail.com
+    password: waogsatyjbbmksev
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   application:
     name: Hirely
   datasource:
@@ -50,8 +61,8 @@ app:
         - image/jpeg
         - image/webp
   jwt:
-    secret-base64: $@%WETSRGWGfgkjsbfisjdf # atleast 256 bits
-    expirationMs: 60000
+    secret-base64: ZDLlXLDRfPqKkcYdZfXalFXYEvL5dxm2dbAUcdE83uy # atleast 256 bits
+    expirationMs: 86400000
 
 logging:
   level:

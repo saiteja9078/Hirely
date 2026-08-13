@@ -16,28 +16,51 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/login/company")
 public class CompanyLoginApi {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final DaoAuthenticationProvider authenticationProvider;
+    private final com.sai.hirely.service.company.CompanyService companyService;
+    private final com.sai.hirely.mappers.CompanyMapper companyMapper;
 
     public CompanyLoginApi(JwtService jwtService,
                                  @Qualifier("companyDetailsService") UserDetailsService userDetailsService,
-                                 @Qualifier("companyAuthenticationProvider") DaoAuthenticationProvider authenticationProvider) {
+                                 @Qualifier("companyAuthenticationProvider") DaoAuthenticationProvider authenticationProvider,
+                                 com.sai.hirely.service.company.CompanyService companyService,
+                                 com.sai.hirely.mappers.CompanyMapper companyMapper) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
         this.authenticationProvider = authenticationProvider;
+        this.companyService = companyService;
+        this.companyMapper = companyMapper;
     }
-    @PostMapping
+    
+    @PostMapping("/login/company")
     // Have to add company verification logic, for now accept every company login
-    public ResponseEntity<AuthenticationResponse> candidateLogin(
+    public ResponseEntity<AuthenticationResponse> companyLogin(
             @Valid @RequestBody AuthenticationRequest request
     ) {
         Authentication auth = authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(
                 request.username(),request.password()
         ));
         String token = jwtService.generateToken( (CustomUserDetails) auth.getPrincipal());
-        return ResponseEntity.status(HttpStatus.OK).body(new AuthenticationResponse(token));
+        return ResponseEntity.status(HttpStatus.OK).body(new AuthenticationResponse(token, request.username()));
+    }
+
+    @PostMapping("/signup/company")
+    public ResponseEntity<AuthenticationResponse> companySignUp(
+            @RequestBody com.sai.hirely.dto.auth.CompanySignupRequest request
+    ) {
+        com.sai.hirely.models.company.Company savedCompany = companyService.addCompany(companyMapper.toEntity(request), request.industryId());
+        CustomUserDetails userDetails = new CustomUserDetails(
+                savedCompany.getId(),
+                savedCompany.getEmail(),
+                savedCompany.getPassword(),
+                java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_COMPANY")),
+                com.sai.hirely.security.details.AccountType.COMPANY
+        );
+        String token = jwtService.generateToken(userDetails);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new AuthenticationResponse(token, savedCompany.getEmail()));
     }
 }

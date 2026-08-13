@@ -7,7 +7,6 @@ public record HiringManagerRequest(
         String lastName,
         Gender gender,
         String email,
-        String password,
         Long departmentId
 ) {
 }

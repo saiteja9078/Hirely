@@ -10,7 +10,6 @@ public record CandidateRequest(
         Integer age,
         String description,
         String email,
-        String password,
         Location location,
         List<Long> skillsList
 ) {

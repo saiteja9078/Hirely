@@ -10,6 +10,7 @@ public record CandidateExperienceResponse(
         Long companyId,
         String companyName,
         String description,
-        Short experienceInMonths
+        java.time.LocalDateTime fromDate,
+        java.time.LocalDateTime toDate
 ) {
 }

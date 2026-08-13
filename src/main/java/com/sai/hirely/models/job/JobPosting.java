@@ -2,6 +2,7 @@ package com.sai.hirely.models.job;
 
 import com.sai.hirely.models.company.Company;
 import com.sai.hirely.models.company.HiringManager;
+import com.sai.hirely.models.utils.JobType;
 import com.sai.hirely.models.utils.Location;
 import com.sai.hirely.models.utils.RoleEntity;
 import com.sai.hirely.models.enums.PostingStatus;
@@ -50,6 +51,10 @@ public class JobPosting
     @ManyToOne
     @JoinColumn(name = "hiring_manager_id")
     private HiringManager hiringManager;
+
+    private JobType type;
+
+    private Short workingHoursPerDay = 8;
 
     @ManyToOne
     @JoinColumn(name = "role_id")

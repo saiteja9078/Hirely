@@ -27,18 +27,7 @@ public class HiringManagerApi {
                 .body(hiringManagerMapper.toResponse(hiringManagerService.findById(id)));
     }
 
-    @PostMapping
-    public ResponseEntity<HiringManagerResponse> addHiringManager(@RequestBody HiringManagerRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(
-                        hiringManagerMapper.toResponse(
-                                hiringManagerService.addHiringManager(
-                                        hiringManagerMapper.toEntity(request),
-                                        request.departmentId()
-                                )
-                        )
-                );
-    }
+
 
     @PatchMapping("/{id}")
     public ResponseEntity<HiringManagerResponse> updateHiringManager(

@@ -20,9 +20,10 @@ public class HiringManagerDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         HiringManager hiringManager = repo.findByEmail(username).orElseThrow(() -> new EmailNotFounctException("Email: "+username+" not found"));
         return new CustomUserDetails(
+                hiringManager.getId(),
                 hiringManager.getEmail(),
                 hiringManager.getPassword(),
-                List.of(new SimpleGrantedAuthority("HIRING_MANAGER")),
+                List.of(new SimpleGrantedAuthority("ROLE_HIRING_MANAGER")),
                 AccountType.HIRING_MANAGER
         );
     }

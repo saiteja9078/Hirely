@@ -4,6 +4,7 @@ import com.sai.hirely.dto.company.CompanyRequest;
 import com.sai.hirely.models.company.Company;
 import com.sai.hirely.repository.company.CompanyRepo;
 import com.sai.hirely.repository.job.IndustryRepo;
+import com.sai.hirely.service.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,12 +16,14 @@ public class CompanyService {
     private final CompanyRepo companyRepo;
     private final IndustryRepo industryRepo;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Autowired
-    public CompanyService(CompanyRepo companyRepo, IndustryRepo industryRepo, PasswordEncoder passwordEncoder) {
+    public CompanyService(CompanyRepo companyRepo, IndustryRepo industryRepo, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.companyRepo = companyRepo;
         this.industryRepo = industryRepo;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     @Transactional(readOnly = true)
@@ -31,19 +34,16 @@ public class CompanyService {
     }
 
     @Transactional
-    public Company addCompany(CompanyRequest request) {
-        Company company = new Company();
-        company.setName(request.name());
-        company.setCompanyProfileUrl(request.companyProfileUrl());
-        company.setLocation(request.location());
-        company.setEmail(request.email());
-        if (request.password() != null && !request.password().isEmpty()) {
-            company.setPassword(passwordEncoder.encode(request.password()));
+    public Company addCompany(Company company, Long industryId) {
+        if (company.getPassword() != null && !company.getPassword().isEmpty()) {
+            company.setPassword(passwordEncoder.encode(company.getPassword()));
         }
-        if (request.industryId() != null) {
-            company.setIndustry(industryRepo.getReferenceById(request.industryId()));
+        if (industryId != null) {
+            company.setIndustry(industryRepo.getReferenceById(industryId));
         }
-        return companyRepo.save(company);
+        Company savedCompany = companyRepo.save(company);
+        emailService.sendWelcomeEmail(savedCompany.getEmail(), savedCompany.getName(), "Company Partner");
+        return savedCompany;
     }
 
     @Transactional
@@ -53,9 +53,6 @@ public class CompanyService {
         company.setCompanyProfileUrl(request.companyProfileUrl());
         company.setLocation(request.location());
         company.setEmail(request.email());
-        if (request.password() != null && !request.password().isEmpty()) {
-            company.setPassword(passwordEncoder.encode(request.password()));
-        }
         
         if (request.industryId() != null && (company.getIndustry() == null || !company.getIndustry().getId().equals(request.industryId()))) {
             company.setIndustry(industryRepo.getReferenceById(request.industryId()));
