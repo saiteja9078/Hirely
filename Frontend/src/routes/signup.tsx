@@ -1,5 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { AuthForm } from "@/components/site/AuthForm";
+import { useRole, ROLE_HOME } from "@/lib/role";
+
+function SignUpPage() {
+  const { role } = useRole();
+  if (role) {
+    return <Navigate to={ROLE_HOME[role]} />;
+  }
+  return <AuthForm mode="signup" />;
+}
 
 export const Route = createFileRoute("/signup")({
   head: () => ({
@@ -10,5 +19,5 @@ export const Route = createFileRoute("/signup")({
       { property: "og:description", content: "Create an account as a candidate, hiring manager, or company." },
     ],
   }),
-  component: () => <AuthForm mode="signup" />,
+  component: SignUpPage,
 });

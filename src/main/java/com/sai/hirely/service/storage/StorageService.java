@@ -22,7 +22,6 @@ public abstract class StorageService {
     public abstract String storePdf(MultipartFile file);
     public String extractTxt(MultipartFile file) {
         try(InputStream in = file.getInputStream()) {
-            System.out.println("Text getting parse");
             return tika.parseToString(in);
         } catch (TikaException | IOException e) {
             throw new InvalidFileException("Failed to parse the file",e.getMessage());

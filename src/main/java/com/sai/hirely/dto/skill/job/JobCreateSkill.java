@@ -6,9 +6,14 @@ import lombok.Getter;
 
 @Getter
 public class JobCreateSkill extends CreateSkill {
-    private final boolean required;
-    public JobCreateSkill(String name, Proficiency proficiency,boolean required) {
-        super(name,proficiency);
+    private boolean required;
+    
+    public JobCreateSkill() {
+        super();
+    }
+    
+    public JobCreateSkill(String name, Proficiency proficiency, boolean required) {
+        super(name, proficiency);
         this.required = required;
     }
 }

@@ -1,7 +1,7 @@
 package com.sai.hirely.repository.candidate;
 
-import com.sai.hirely.service.candidate.CandidateInterests;
-import com.sai.hirely.service.candidate.CandidateInterestsKey;
+import com.sai.hirely.models.candidate.CandidateInterests;
+import com.sai.hirely.models.candidate.CandidateInterestsKey;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -8,9 +8,14 @@ import lombok.Setter;
 
 @Getter
 public class JobExistingSkill extends ExistingSkill {
-    private final boolean required;
-    public JobExistingSkill(long id, Proficiency proficiency,boolean required) {
-        super(id,proficiency);
+    private boolean required;
+    
+    public JobExistingSkill() {
+        super();
+    }
+    
+    public JobExistingSkill(long id, Proficiency proficiency, boolean required) {
+        super(id, proficiency);
         this.required = required;
     }
 }

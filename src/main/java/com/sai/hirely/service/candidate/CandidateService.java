@@ -39,13 +39,13 @@ public class CandidateService {
     @Transactional
     public Candidate updateCandidate(Long id, CandidateRequest request) throws EntityNotFoundException{
         Candidate candidate = findById(id);
-        candidate.setFirstName(request.firstName());
-        candidate.setLastName(request.lastName());
-        candidate.setAge(request.age());
-        candidate.setGender(request.gender());
-        candidate.setEmail(request.email());
-        candidate.setDescription(request.description());
-        candidate.setLocation(request.location());
+        if (request.firstName() != null) candidate.setFirstName(request.firstName());
+        if (request.lastName() != null) candidate.setLastName(request.lastName());
+        if (request.age() != null) candidate.setAge(request.age());
+        if (request.gender() != null) candidate.setGender(request.gender());
+        if (request.email() != null) candidate.setEmail(request.email());
+        if (request.description() != null) candidate.setDescription(request.description());
+        if (request.location() != null) candidate.setLocation(request.location());
         return candidate;
     }
 

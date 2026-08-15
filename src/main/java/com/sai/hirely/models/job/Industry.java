@@ -18,8 +18,13 @@ import java.util.List;
 public class Industry {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "industry_seq")
+    @SequenceGenerator(name = "industry_seq", allocationSize = 50)
     private Long id;
     private String name;
+
+    public Industry() {}
+    public Industry(String name) { this.name = name; }
 
     @OneToMany(mappedBy = "industry")
     private List<Company> companies;

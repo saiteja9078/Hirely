@@ -3,11 +3,15 @@ package com.sai.hirely.models.utils;
 
 import com.sai.hirely.models.candidate.Candidate;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
 
 @Entity(name = "resumes")
 @Table
+@Getter
+@Setter
 public class Resume {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -23,6 +27,7 @@ public class Resume {
 
     private LocalDateTime uploadedAt;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     protected Resume(){}
@@ -36,6 +41,6 @@ public class Resume {
         this.storedPath = storedPath;
         this.content = content;
         this.uploadedAt = LocalDateTime.now();
-
+        this.candidate = candidate;
     }
 }

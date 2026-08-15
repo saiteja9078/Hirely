@@ -1,6 +1,7 @@
 package com.sai.hirely.dto.job;
 
 import com.sai.hirely.models.utils.WorkMode;
+import com.sai.hirely.models.utils.JobType;
 
 import java.time.LocalDateTime;
 
@@ -13,5 +14,6 @@ public record JobCard(
         WorkMode workMode,
         Integer minimumExperienceInMonths,
         String companyProfileUrl,
-        String companyName
+        String companyName,
+        JobType type
 ) {}

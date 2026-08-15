@@ -9,16 +9,23 @@ const publicNav = [
   { to: "/", label: "Home" },
   { to: "/jobs", label: "Find jobs" },
   { to: "/companies", label: "Company reviews" },
-  { to: "/salaries", label: "Salary guide" },
 ] as const;
 
 const activeProps = {
   className: "text-foreground after:scale-x-100",
 };
 
+import { useNavigate } from "@tanstack/react-router";
+
 export function Header() {
-  const { role, setRole } = useRole();
+  const { role, logout } = useRole();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+
+  function handleSignOut() {
+    logout();
+    navigate({ to: "/" });
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
@@ -26,24 +33,28 @@ export function Header() {
         <Logo />
 
         <nav className="hidden items-center gap-7 md:flex">
-          {publicNav.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              activeOptions={{ exact: item.to === "/" }}
-              activeProps={activeProps}
-              className="relative py-5 text-[15px] text-muted-foreground transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-[3px] after:scale-x-0 after:bg-primary after:transition-transform hover:text-foreground"
-            >
-              {item.label}
-            </Link>
-          ))}
-          {role && (
+          {publicNav.map((item) => {
+            if (role && item.to === "/") return null;
+            if ((role === "company" || role === "hiring") && item.to !== "/") return null;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                activeOptions={{ exact: item.to === "/" }}
+                activeProps={activeProps}
+                className="relative py-5 text-[15px] text-muted-foreground transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-[3px] after:scale-x-0 after:bg-primary after:transition-transform hover:text-foreground"
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+          {role && role !== "candidate" && (
             <Link
               to={ROLE_HOME[role]}
               activeProps={activeProps}
               className="relative py-5 text-[15px] text-muted-foreground transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-[3px] after:scale-x-0 after:bg-primary after:transition-transform hover:text-foreground"
             >
-              {role === "candidate" ? "My jobs" : "Dashboard"}
+              Dashboard
             </Link>
           )}
         </nav>
@@ -77,7 +88,7 @@ export function Header() {
               </span>
               <button
                 type="button"
-                onClick={() => setRole(null)}
+                onClick={handleSignOut}
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 Sign out
@@ -110,7 +121,11 @@ export function Header() {
 
       {open && (
         <nav className="border-t border-border bg-background px-4 pb-4 md:hidden">
-          {[...publicNav, ...(role ? [{ to: ROLE_HOME[role], label: "Dashboard" } as const] : [])].map((item) => (
+          {[...publicNav.filter((item) => {
+             if (role && item.to === "/") return false;
+             if ((role === "company" || role === "hiring") && item.to !== "/") return false;
+             return true;
+          }), ...(role && role !== "candidate" ? [{ to: ROLE_HOME[role], label: "Dashboard" } as const] : [])].map((item) => (
             <Link
               key={item.to}
               to={item.to}

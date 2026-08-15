@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 public interface CandidateSkillRepo extends JpaRepository<CandidateSkill, CandidateSkillKey> {
-    @Query("select cs from CandidateSkill cs join fetch cs.skill")
-    List<CandidateSkill> findAllByCandidateSkills(Long id);
+    @Query("select cs from CandidateSkill cs join fetch cs.skill where cs.candidate.id = :candidateId")
+    List<CandidateSkill> findAllByCandidateSkills(Long candidateId);
 }

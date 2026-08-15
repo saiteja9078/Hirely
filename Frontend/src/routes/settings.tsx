@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, Mail, Monitor, Lock, ShieldCheck, UserRound } from "lucide-react";
-import { useState } from "react";
-import { candidate } from "@/data/mock";
+import { useEffect, useState } from "react";
+import { getCurrentCandidate, getCurrentCompany, getCurrentHiringManager } from "@/lib/api";
+import { useRole } from "@/lib/role";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -27,6 +28,30 @@ const sections: { id: SectionId; title: string; blurb: string; icon: React.React
 
 function SettingsPage() {
   const [active, setActive] = useState<SectionId>("account");
+  const { role, setRole } = useRole();
+  const navigate = useNavigate();
+  const [userInfo, setUserInfo] = useState<{ email: string; name: string } | null>(null);
+
+  useEffect(() => {
+    if (role === "candidate") {
+      getCurrentCandidate()
+        .then((c) => setUserInfo({ email: c.email, name: `${c.firstName} ${c.lastName}` }))
+        .catch(() => setUserInfo(null));
+    } else if (role === "company") {
+      getCurrentCompany()
+        .then((c) => setUserInfo({ email: (c as any).email || c.name, name: c.name }))
+        .catch(() => setUserInfo(null));
+    } else if (role === "hiring") {
+      getCurrentHiringManager()
+        .then((m) => setUserInfo({ email: m.email, name: `${m.firstName} ${m.lastName}` }))
+        .catch(() => setUserInfo(null));
+    }
+  }, [role]);
+
+  function handleSignOut() {
+    setRole(null);
+    navigate({ to: "/" });
+  }
 
   return (
     <div className="mx-auto grid max-w-[1400px] lg:grid-cols-[420px_minmax(0,1fr)]">
@@ -61,48 +86,46 @@ function SettingsPage() {
       </aside>
 
       <section className="px-6 py-10 sm:px-12">
-        {active === "account" && <AccountPanel />}
+        {active === "account" && (
+          <Panel title="Account settings">
+            <Row label="Account type:" value={role ? role.toUpperCase() : "Guest"} action="Active role" />
+            <Row label="Name:" value={userInfo?.name || "User"} action="Registered Name" />
+            <Row label="Email" value={userInfo?.email || "Signed in account"} action="Account email" />
+            <div className="pt-6">
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="rounded-lg bg-destructive px-6 py-2.5 text-sm font-semibold text-destructive-foreground hover:bg-destructive/90 transition-colors"
+              >
+                Sign out of account
+              </button>
+            </div>
+          </Panel>
+        )}
         {active === "security" && (
           <Panel title="Security settings">
-            <Row label="Two-step verification" value="Off" action="Turn on" />
-            <Row label="Recent sign-ins" value="3 devices in the last 30 days" action="Review" />
+            <Row label="Two-step verification" value="Off" action="Manage" />
+            <Row label="Password & Authentication" value="JWT Session Active" action="Secure" />
           </Panel>
         )}
         {active === "communications" && (
           <Panel title="Communications settings">
-            <Row label="Job alert emails" value="Weekly" action="Change" />
+            <Row label="Job alert emails" value="Weekly summary" action="Change" />
             <Row label="Employer messages" value="Enabled" action="Change" />
           </Panel>
         )}
         {active === "devices" && (
           <Panel title="Device management">
-            <Row label="MacBook Pro · Chrome" value="Active now · Guntur, IN" action="Sign out" />
-            <Row label="iPhone · Hirely app" value="Last active yesterday" action="Sign out" />
+            <Row label="Current Browser Session" value="Active now" action="Current device" />
           </Panel>
         )}
         {active === "privacy" && (
           <Panel title="Privacy settings">
-            <Row label="Profile visibility" value="Employers can find you" action="Change" />
-            <Row label="Download your data" value="Request a copy of your Hirely data" action="Request" />
+            <Row label="Profile visibility" value="Employers can search your profile" action="Change" />
           </Panel>
         )}
       </section>
     </div>
-  );
-}
-
-function AccountPanel() {
-  return (
-    <Panel title="Account settings">
-      <Row label="Account type:" value="Jobseeker" action="Change account type" />
-      <Row label="Email" value={candidate.email} action="Change email" />
-      <Row label="Phone number" value={`+91 ${candidate.phone}`} action="Change phone number" />
-      <Row label="Passkey" value="" action="Create passkey" />
-      <Row label={candidate.email} value="" action="Sign out" />
-      <button type="button" className="pt-4 font-semibold text-destructive hover:underline">
-        Close my account
-      </button>
-    </Panel>
   );
 }
 
@@ -122,12 +145,7 @@ function Row({ label, value, action }: { label: string; value: string; action: s
         <p className="font-semibold text-foreground">{label}</p>
         {value && <p className="mt-1 text-[15px] text-muted-foreground">{value}</p>}
       </div>
-      <button
-        type="button"
-        className="rounded-lg border border-input bg-card px-5 py-2.5 text-[15px] font-semibold text-primary transition-colors hover:bg-accent"
-      >
-        {action}
-      </button>
+      <span className="text-sm font-medium text-muted-foreground">{action}</span>
     </div>
   );
 }

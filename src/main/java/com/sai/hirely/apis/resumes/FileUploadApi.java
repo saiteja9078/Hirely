@@ -1,58 +1,81 @@
 package com.sai.hirely.apis.resumes;
 
 
-import com.sai.hirely.dto.file.FileResponse;
-import com.sai.hirely.service.storage.StorageService;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.sai.hirely.dto.file.ResumeResponse;
+import com.sai.hirely.security.CurrentUser;
+import com.sai.hirely.security.details.AccountType;
+import com.sai.hirely.security.details.CustomUserDetails;
+import com.sai.hirely.service.candidate.CandidateService;
+import com.sai.hirely.service.storage.ResumeService;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.Map;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/files/upload")
 public class FileUploadApi {
 
-    private final StorageService fileStorageService;
-    private final Map<String,Object> schemaForLLM  = Map.of(
-            "skills", List.of(
-            Map.of(
-            "skillName", "Java",
-            "proficiency", "ADVANCED"
-            )
-            ),
-            "experiences", List.of(
-            Map.of(
-            "roleName", "Software Engineer",
-            "organizationName", "Google",
-            "description", "Developed REST APIs using Spring Boot.",
-            "companyName", "Google",
-            "experienceInMonths", 24
-            )
-            )
-            );
-    private final StorageService storageService;
+    private final ResumeService resumeService;
+    private final CandidateService candidateService;
 
-    public FileUploadApi(@Qualifier("localStorage") StorageService service, StorageService storageService) {
-        this.fileStorageService = service;
-        this.storageService = storageService;
+    public FileUploadApi(ResumeService resumeService, CandidateService candidateService) {
+        this.resumeService = resumeService;
+        this.candidateService = candidateService;
     }
 
-    // take the resume first when the user is trying to login. then process the resume meanwhile user is filling in the details
     @PostMapping(path = "/resume")
-    public ResponseEntity<FileResponse> uploadResume(
+    public ResponseEntity<ResumeResponse> uploadResume(
+            @AuthenticationPrincipal CustomUserDetails user,
             @RequestParam("file") MultipartFile file
-            ) {
-            // send resume to ai service to parse and extract skills and experiences.
-            // and save them thru skill service and experience service
-            String parsedText = storageService.extractTxt(file);
-            String storedFileName = fileStorageService.storePdf(file);
-//            aiService.postAfterExtraction(schema,parsedText) -> will post extracted schema types and all to frontend
-            return ResponseEntity.ok(new FileResponse(
-                    storedFileName,
-                    file.getContentType(),
-                    file.getSize()
-            ));
+    ) {
+        CurrentUser.require(user, AccountType.CANDIDATE);
+        return ResponseEntity.ok(resumeService.upload(candidateService.findById(user.getId()), file));
+    }
+
+    @GetMapping("/resume")
+    public List<ResumeResponse> listResumes(@AuthenticationPrincipal CustomUserDetails user) {
+        CurrentUser.require(user, AccountType.CANDIDATE);
+        return resumeService.findByCandidateId(user.getId());
+    }
+
+    @DeleteMapping("/resume/{resumeId}")
+    public ResponseEntity<Void> deleteResume(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @PathVariable Long resumeId
+    ) {
+        CurrentUser.require(user, AccountType.CANDIDATE);
+        resumeService.delete(resumeId, user.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/resume/{resumeId}/download")
+    public ResponseEntity<Resource> downloadResume(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @PathVariable Long resumeId
+    ) {
+        CurrentUser.require(user, AccountType.CANDIDATE);
+        Resource resource = resumeService.download(resumeId, user.getId());
+        String contentType = "application/octet-stream";
+        try {
+            String probedContentType = Files.probeContentType(Path.of(resumeService.getResumeEntity(resumeId, user.getId()).getStoredPath()));
+            if (probedContentType != null) {
+                contentType = probedContentType;
+            }
+        } catch (IOException ex) {
+            // ignore
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resumeService.getResumeEntity(resumeId, user.getId()).getActualName() + "\"")
+                .body(resource);
     }
 }

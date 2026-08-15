@@ -11,7 +11,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CandidateRepo extends JpaRepository<Candidate,Long> {
-    @Query("select s.id,s.name,cs.proficiency from Candidate c left join c.candidateSkills cs left join cs.skill s where c.id =:id")
+    @Query("""
+            select new com.sai.hirely.dto.skill.candidate.CandidateSkillDto(s.id, s.name, cs.proficiency)
+            from Candidate c join c.candidateSkills cs join cs.skill s
+            where c.id = :id
+            order by s.name
+            """)
     List<CandidateSkillDto> findAllCandidateSKills(Long id);
 
     Optional<Candidate> findByEmail(String email);

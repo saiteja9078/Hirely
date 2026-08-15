@@ -1,7 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, Building2, Search, Star, Users } from "lucide-react";
 import { SearchBar } from "@/components/site/SearchBar";
-import { companies, jobCategories, jobs } from "@/data/mock";
+import { getCatalog, listCompanies, listJobs, type CatalogItem } from "@/lib/api";
+import { useEffect, useState } from "react";
+import type { Company, Job } from "@/types";
+
+import { ROLE_HOME, useRole } from "@/lib/role";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -15,7 +19,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Hirely — Find your next job or your next hire" },
       {
         property: "og:description",
-        content: "Search jobs, read company reviews, compare salaries, and manage hiring on Hirely.",
+        content:
+          "Search jobs, read company reviews, compare salaries, and manage hiring on Hirely.",
       },
     ],
   }),
@@ -24,6 +29,39 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   const navigate = useNavigate();
+  const { role } = useRole();
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [categories, setCategories] = useState<CatalogItem[]>([]);
+  const [catalog, setCatalog] = useState<{
+    skills: { id: number; name: string }[];
+    roles: { id: number; name: string }[];
+    industries: { id: number; name: string }[];
+    companies: { slug: string; name: string; backendId?: number }[];
+  }>({ skills: [], roles: [], industries: [], companies: [] });
+
+  useEffect(() => {
+    if (role) {
+      navigate({ to: ROLE_HOME[role], replace: true });
+      return;
+    }
+    listJobs()
+      .then(setJobs)
+      .catch(() => {});
+    listCompanies()
+      .then(setCompanies)
+      .catch(() => {});
+    getCatalog()
+      .then((cat) => {
+        setCategories(cat.roles);
+        setCatalog(cat as any);
+      })
+      .catch(() => {});
+  }, [role, navigate]);
+
+  if (role) {
+    return null;
+  }
 
   return (
     <div>
@@ -40,17 +78,31 @@ function Landing() {
           </p>
 
           <div className="mx-auto mt-10 max-w-3xl">
-            <SearchBar onSearch={() => navigate({ to: "/jobs" })} />
+            <SearchBar 
+              catalog={catalog}
+              onSearch={(q, loc, filters) => {
+              navigate({
+                to: "/jobs",
+                search: {
+                  q: q || undefined,
+                  location: loc || undefined,
+                  roleId: filters?.roleId,
+                  companyIds: filters?.companyIds?.length ? filters.companyIds : undefined,
+                  skillIds: filters?.skillIds?.length ? filters.skillIds : undefined,
+                } as any,
+              });
+            }} />
           </div>
 
           <div className="mt-6 flex flex-wrap justify-center gap-2">
-            {jobCategories.slice(0, 6).map((c) => (
+            {categories.slice(0, 8).map((c) => (
               <Link
-                key={c}
+                key={c.id}
                 to="/jobs"
+                search={{ roleId: c.id } as any}
                 className="rounded-full border border-border bg-card px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
               >
-                {c}
+                {c.name}
               </Link>
             ))}
           </div>
@@ -75,7 +127,10 @@ function Landing() {
         <div className="mx-auto max-w-[1100px] px-4 py-16 sm:px-6">
           <div className="flex items-end justify-between gap-4">
             <h2 className="font-display text-2xl font-bold text-foreground">Featured jobs</h2>
-            <Link to="/jobs" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+            <Link
+              to="/jobs"
+              className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+            >
               See all jobs <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -108,9 +163,9 @@ function Landing() {
             >
               <p className="font-display font-semibold text-foreground">{c.name}</p>
               <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
-                <Star className="size-4 fill-current text-chart-4" /> {c.rating} · {c.reviewCount} reviews
+                <Star className="size-4 fill-current text-chart-4" /> {c.industry}
               </p>
-              <p className="mt-3 text-sm text-muted-foreground">{c.openRoles} open roles</p>
+              <p className="mt-3 text-sm text-muted-foreground">{c.location}</p>
             </Link>
           ))}
         </div>
@@ -136,7 +191,15 @@ function Landing() {
   );
 }
 
-function ValueProp({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
+function ValueProp({
+  icon,
+  title,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="rounded-xl border border-border bg-card p-6">
       <div className="inline-flex size-10 items-center justify-center rounded-lg bg-info-muted text-info-muted-foreground">
@@ -148,7 +211,17 @@ function ValueProp({ icon, title, children }: { icon: React.ReactNode; title: st
   );
 }
 
-function CtaCard({ title, body, to, cta }: { title: string; body: string; to: string; cta: string }) {
+function CtaCard({
+  title,
+  body,
+  to,
+  cta,
+}: {
+  title: string;
+  body: string;
+  to: string;
+  cta: string;
+}) {
   return (
     <div className="rounded-xl border border-border bg-card p-8">
       <h3 className="font-display text-xl font-bold text-foreground">{title}</h3>

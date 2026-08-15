@@ -9,6 +9,7 @@ public record CompanySignupRequest(
         String password,
         Location location,
         Long departmentId,
-        Long industryId
+        Long industryId,
+        String industryName
 ) {
 }

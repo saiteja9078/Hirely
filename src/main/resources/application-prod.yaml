@@ -1,0 +1,79 @@
+server:
+  port: 8080 # match what Nginx proxy_pass expects
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  application:
+    name: Hirely
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 25
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
+      file-size-threshold: 2KB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health # not "mappings" in prod — see below
+
+app:
+  frontend:
+    url: ${FRONTEND_URL}
+  cors:
+    allowed-origin: ${CORS_ALLOWED_ORIGIN}
+  upload:
+    resume:
+      root-dir: /opt/myapp/uploads
+      max-file-size: 10MB
+      allowed-file-types:
+        - application/pdf
+        - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+    image:
+      max-file-size: 1MB
+      allowed-file-types:
+        - image/png
+        - image/jpeg
+        - image/webp
+  jwt:
+    secret-base64: ${JWT_SECRET_BASE64}
+    expirationMs: 86400000
+
+logging:
+  level:
+    org:
+      springframework:
+        security: WARN

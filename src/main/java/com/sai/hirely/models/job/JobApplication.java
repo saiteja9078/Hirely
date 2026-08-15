@@ -38,4 +38,8 @@ public class JobApplication {
         @ManyToOne
         @JoinColumn(name = "job_posting_id")
         private JobPosting jobPosting;
+
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "resume_id")
+        private com.sai.hirely.models.utils.Resume resume;
 }

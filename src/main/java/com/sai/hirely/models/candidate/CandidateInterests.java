@@ -1,4 +1,4 @@
-package com.sai.hirely.service.candidate;
+package com.sai.hirely.models.candidate;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;

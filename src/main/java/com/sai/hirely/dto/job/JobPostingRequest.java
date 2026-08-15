@@ -10,6 +10,7 @@ public record JobPostingRequest(
         Long hiringManagerId,
         Long companyId,
         Long roleId,
+        String createRoleName,
         String title,
         String description,
         Integer salaryLower,

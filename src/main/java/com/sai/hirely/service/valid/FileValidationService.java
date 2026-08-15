@@ -57,7 +57,6 @@ public class FileValidationService {
             // Checks first few bits in order to verify the file type.
             Tika tika = new Tika();
             String detected = tika.detect(file.getInputStream());
-            System.out.println(detected);
             if(detected == null || !resumeFileTypes.contains(detected)) {
                 throw new InvalidFileException("File type not supported " + detected);
             }

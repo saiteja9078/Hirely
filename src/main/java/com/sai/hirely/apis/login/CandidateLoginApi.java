@@ -20,16 +20,19 @@ public class CandidateLoginApi {
     private final DaoAuthenticationProvider authProvider;
 
     private final com.sai.hirely.service.candidate.CandidateService candidateService;
+    private final com.sai.hirely.service.candidate.CandidateSkillService candidateSkillService;
     private final com.sai.hirely.mappers.CandidateMapper candidateMapper;
 
     public CandidateLoginApi(JwtService jwtService,
             @Qualifier("candidateDetailsService") UserDetailsService userDetailsService,
             @Qualifier("candidateAuthenticationProvider") DaoAuthenticationProvider authManager,
             com.sai.hirely.service.candidate.CandidateService candidateService,
+            com.sai.hirely.service.candidate.CandidateSkillService candidateSkillService,
             com.sai.hirely.mappers.CandidateMapper candidateMapper) {
         this.jwtService = jwtService;
         this.authProvider = authManager;
         this.candidateService = candidateService;
+        this.candidateSkillService = candidateSkillService;
         this.candidateMapper = candidateMapper;
     }
 
@@ -46,6 +49,7 @@ public class CandidateLoginApi {
     public ResponseEntity<AuthenticationResponse> candidateSignUp(
             @RequestBody com.sai.hirely.dto.auth.CandidateSignupRequest request) {
         com.sai.hirely.models.candidate.Candidate savedCandidate = candidateService.addCandidate(candidateMapper.toEntity(request));
+        candidateSkillService.addExistingSkillIds(savedCandidate.getId(), request.skillsList());
         CustomUserDetails userDetails = new CustomUserDetails(
                 savedCandidate.getId(),
                 savedCandidate.getEmail(),

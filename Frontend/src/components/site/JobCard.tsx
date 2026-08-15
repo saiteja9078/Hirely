@@ -5,9 +5,10 @@ interface JobCardProps {
   job: Job;
   selected?: boolean;
   onSelect?: (job: Job) => void;
+  highlights?: { salary?: boolean; remote?: boolean; types?: string[]; skills?: string[] };
 }
 
-export function JobCard({ job, selected = false, onSelect }: JobCardProps) {
+export function JobCard({ job, selected = false, onSelect, highlights }: JobCardProps) {
   return (
     <article
       onClick={() => onSelect?.(job)}
@@ -24,7 +25,7 @@ export function JobCard({ job, selected = false, onSelect }: JobCardProps) {
           )}
           <h3 className="mt-3 font-display text-xl font-semibold text-foreground">{job.title}</h3>
           <p className="mt-2 text-[15px] text-muted-foreground">{job.company}</p>
-          <p className="text-[15px] text-muted-foreground">{job.location}</p>
+          <p className="text-[15px] text-muted-foreground">{job.location} · {job.postedAt}</p>
         </div>
         <div className="flex shrink-0 flex-col gap-3">
           <IconButton label="Save job">
@@ -37,25 +38,24 @@ export function JobCard({ job, selected = false, onSelect }: JobCardProps) {
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <span className="inline-flex items-center gap-2 rounded-md bg-success-muted px-3 py-1.5 text-sm font-medium text-foreground">
-          <Check className="size-4 text-success" />
+        <span className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium ${highlights?.salary ? "bg-green-500/20 text-green-700 dark:bg-green-500/10 dark:text-green-400" : "bg-secondary text-secondary-foreground"}`}>
           {job.payLabel}
         </span>
         {job.jobTypes.slice(0, 1).map((t) => (
-          <Chip key={t}>{t}</Chip>
+          <Chip key={t} active={highlights?.types?.includes(t.toLowerCase())}>{t}</Chip>
         ))}
         {job.jobTypes.length > 1 && <Chip>+{job.jobTypes.length - 1}</Chip>}
         {job.tags.map((t) => (
-          <Chip key={t}>{t}</Chip>
+          <Chip key={t} active={highlights?.remote && t === "Work from home"}>{t}</Chip>
         ))}
       </div>
     </article>
   );
 }
 
-function Chip({ children }: { children: React.ReactNode }) {
+function Chip({ children, active }: { children: React.ReactNode, active?: boolean }) {
   return (
-    <span className="rounded-md bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground">
+    <span className={`rounded-md px-3 py-1.5 text-sm font-medium ${active ? "bg-green-500/20 text-green-700 dark:bg-green-500/10 dark:text-green-400" : "bg-secondary text-secondary-foreground"}`}>
       {children}
     </span>
   );

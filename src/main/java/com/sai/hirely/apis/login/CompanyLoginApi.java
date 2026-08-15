@@ -51,7 +51,11 @@ public class CompanyLoginApi {
     public ResponseEntity<AuthenticationResponse> companySignUp(
             @RequestBody com.sai.hirely.dto.auth.CompanySignupRequest request
     ) {
-        com.sai.hirely.models.company.Company savedCompany = companyService.addCompany(companyMapper.toEntity(request), request.industryId());
+        com.sai.hirely.models.company.Company savedCompany = companyService.addCompany(
+            companyMapper.toEntity(request), 
+            request.industryId(), 
+            request.industryName()
+        );
         CustomUserDetails userDetails = new CustomUserDetails(
                 savedCompany.getId(),
                 savedCompany.getEmail(),

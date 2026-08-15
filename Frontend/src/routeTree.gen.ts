@@ -15,10 +15,10 @@ import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as SalariesRouteImport } from './routes/salaries'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ApplicationsApplicationIdRouteImport } from './routes/applications.$applicationId'
 import { Route as ApplyJobIdRouteImport } from './routes/apply.$jobId'
 import { Route as CompaniesIndexRouteImport } from './routes/companies.index'
 import { Route as CompaniesSlugRouteImport } from './routes/companies.$slug'
@@ -58,11 +58,6 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SalariesRoute = SalariesRouteImport.update({
-  id: '/salaries',
-  path: '/salaries',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -78,6 +73,12 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApplicationsApplicationIdRoute =
+  ApplicationsApplicationIdRouteImport.update({
+    id: '/applications/$applicationId',
+    path: '/applications/$applicationId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApplyJobIdRoute = ApplyJobIdRouteImport.update({
   id: '/apply/$jobId',
   path: '/apply/$jobId',
@@ -127,10 +128,10 @@ export interface FileRoutesByFullPath {
   '/messages': typeof MessagesRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
-  '/salaries': typeof SalariesRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/applications/$applicationId': typeof ApplicationsApplicationIdRoute
   '/apply/$jobId': typeof ApplyJobIdRoute
   '/companies/$slug': typeof CompaniesSlugRoute
   '/company/post-job': typeof CompanyPostJobRoute
@@ -147,10 +148,10 @@ export interface FileRoutesByTo {
   '/messages': typeof MessagesRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
-  '/salaries': typeof SalariesRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/applications/$applicationId': typeof ApplicationsApplicationIdRoute
   '/apply/$jobId': typeof ApplyJobIdRoute
   '/companies/$slug': typeof CompaniesSlugRoute
   '/company/post-job': typeof CompanyPostJobRoute
@@ -168,10 +169,10 @@ export interface FileRoutesById {
   '/messages': typeof MessagesRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
-  '/salaries': typeof SalariesRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/applications/$applicationId': typeof ApplicationsApplicationIdRoute
   '/apply/$jobId': typeof ApplyJobIdRoute
   '/companies/$slug': typeof CompaniesSlugRoute
   '/company/post-job': typeof CompanyPostJobRoute
@@ -190,10 +191,10 @@ export interface FileRouteTypes {
     | '/messages'
     | '/notifications'
     | '/profile'
-    | '/salaries'
     | '/settings'
     | '/signin'
     | '/signup'
+    | '/applications/$applicationId'
     | '/apply/$jobId'
     | '/companies/$slug'
     | '/company/post-job'
@@ -210,10 +211,10 @@ export interface FileRouteTypes {
     | '/messages'
     | '/notifications'
     | '/profile'
-    | '/salaries'
     | '/settings'
     | '/signin'
     | '/signup'
+    | '/applications/$applicationId'
     | '/apply/$jobId'
     | '/companies/$slug'
     | '/company/post-job'
@@ -230,10 +231,10 @@ export interface FileRouteTypes {
     | '/messages'
     | '/notifications'
     | '/profile'
-    | '/salaries'
     | '/settings'
     | '/signin'
     | '/signup'
+    | '/applications/$applicationId'
     | '/apply/$jobId'
     | '/companies/$slug'
     | '/company/post-job'
@@ -251,10 +252,10 @@ export interface RootRouteChildren {
   MessagesRoute: typeof MessagesRoute
   NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRoute
-  SalariesRoute: typeof SalariesRoute
   SettingsRoute: typeof SettingsRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
+  ApplicationsApplicationIdRoute: typeof ApplicationsApplicationIdRoute
   ApplyJobIdRoute: typeof ApplyJobIdRoute
   CompaniesSlugRoute: typeof CompaniesSlugRoute
   CompanyPostJobRoute: typeof CompanyPostJobRoute
@@ -309,13 +310,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/salaries': {
-      id: '/salaries'
-      path: '/salaries'
-      fullPath: '/salaries'
-      preLoaderRoute: typeof SalariesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -335,6 +329,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/applications/$applicationId': {
+      id: '/applications/$applicationId'
+      path: '/applications/$applicationId'
+      fullPath: '/applications/$applicationId'
+      preLoaderRoute: typeof ApplicationsApplicationIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/apply/$jobId': {
@@ -403,10 +404,10 @@ const rootRouteChildren: RootRouteChildren = {
   MessagesRoute: MessagesRoute,
   NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRoute,
-  SalariesRoute: SalariesRoute,
   SettingsRoute: SettingsRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
+  ApplicationsApplicationIdRoute: ApplicationsApplicationIdRoute,
   ApplyJobIdRoute: ApplyJobIdRoute,
   CompaniesSlugRoute: CompaniesSlugRoute,
   CompanyPostJobRoute: CompanyPostJobRoute,

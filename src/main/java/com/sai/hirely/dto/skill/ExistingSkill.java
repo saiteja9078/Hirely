@@ -5,11 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-public class ExistingSkill{
-        private final Long id;
-        private final Proficiency proficiency;
-        public ExistingSkill(Long id,Proficiency proficiency) {
-            this.id = id;
-            this.proficiency = proficiency;
-        }
+public class ExistingSkill {
+    private Long id;
+    private Proficiency proficiency;
+
+    public ExistingSkill() {}
+
+    public ExistingSkill(Long id, Proficiency proficiency) {
+        this.id = id;
+        this.proficiency = proficiency;
+    }
 }

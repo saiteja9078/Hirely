@@ -7,6 +7,7 @@ public record CompanyReviewResponse(
         String text,
         Short stars,
         Long candidateId,
+        String candidateName,
         Long companyId,
         LocalDateTime createdAt
 ) {

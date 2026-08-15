@@ -41,14 +41,21 @@ public class JwtFilter extends OncePerRequestFilter {
         String type = jwtService.extractClaim(token, claims -> claims.get("type",String.class));
 
         if(userName != null && SecurityContextHolder.getContext().getAuthentication()==null && type!=null) {
-            CustomUserDetails details =(CustomUserDetails) userDetailsServiceFactory.getUserDetailsService(AccountType.valueOf(type)).loadUserByUsername(userName);
-            if(jwtService.isTokenValid(token,details)) {
-                UsernamePasswordAuthenticationToken authentication = new
-                        UsernamePasswordAuthenticationToken(
-                        details,null,details.getAuthorities()
-                );
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            try {
+                CustomUserDetails details =(CustomUserDetails) userDetailsServiceFactory.getUserDetailsService(AccountType.valueOf(type)).loadUserByUsername(userName);
+                if(jwtService.isTokenValid(token,details)) {
+                    UsernamePasswordAuthenticationToken authentication = new
+                            UsernamePasswordAuthenticationToken(
+                            details,null,details.getAuthorities()
+                    );
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (Exception e) {
+                httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                httpResponse.setContentType("application/json");
+                httpResponse.getWriter().write("{\"error\": \"Unauthorized - User not found\"}");
+                return;
             }
         }
         filterChain.doFilter(httpRequest,httpResponse);

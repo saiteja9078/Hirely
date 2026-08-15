@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 import com.sai.hirely.exceptions.company.EntityNotFoundException;
 
 @Service
@@ -33,13 +34,22 @@ public class CompanyService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public List<Company> findAll() {
+        return companyRepo.findAll();
+    }
+
     @Transactional
-    public Company addCompany(Company company, Long industryId) {
+    public Company addCompany(Company company, Long industryId, String industryName) {
         if (company.getPassword() != null && !company.getPassword().isEmpty()) {
             company.setPassword(passwordEncoder.encode(company.getPassword()));
         }
         if (industryId != null) {
             company.setIndustry(industryRepo.getReferenceById(industryId));
+        } else if (industryName != null && !industryName.trim().isEmpty()) {
+            com.sai.hirely.models.job.Industry newIndustry = new com.sai.hirely.models.job.Industry(industryName.trim());
+            newIndustry = industryRepo.save(newIndustry);
+            company.setIndustry(newIndustry);
         }
         Company savedCompany = companyRepo.save(company);
         emailService.sendWelcomeEmail(savedCompany.getEmail(), savedCompany.getName(), "Company Partner");
@@ -49,10 +59,10 @@ public class CompanyService {
     @Transactional
     public Company updateCompany(Long id, CompanyRequest request) throws EntityNotFoundException {
         Company company = findById(id);
-        company.setName(request.name());
-        company.setCompanyProfileUrl(request.companyProfileUrl());
-        company.setLocation(request.location());
-        company.setEmail(request.email());
+        if (request.name() != null) company.setName(request.name());
+        if (request.companyProfileUrl() != null) company.setCompanyProfileUrl(request.companyProfileUrl());
+        if (request.location() != null) company.setLocation(request.location());
+        if (request.email() != null) company.setEmail(request.email());
         
         if (request.industryId() != null && (company.getIndustry() == null || !company.getIndustry().getId().equals(request.industryId()))) {
             company.setIndustry(industryRepo.getReferenceById(request.industryId()));

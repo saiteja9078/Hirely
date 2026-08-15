@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { EmptyState } from "@/components/site/EmptyState";
-import { notifications } from "@/data/mock";
+import { getNotifications, type AppNotificationResponse } from "@/lib/api";
 
 export const Route = createFileRoute("/notifications")({
   head: () => ({
@@ -15,6 +16,20 @@ export const Route = createFileRoute("/notifications")({
 });
 
 function NotificationsPage() {
+  const [notifications, setNotifications] = useState<AppNotificationResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getNotifications()
+      .then(setNotifications)
+      .catch(() => setNotifications([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return <div className="mx-auto max-w-[760px] px-4 py-12 text-muted-foreground">Loading notifications…</div>;
+  }
+
   if (notifications.length === 0) {
     return (
       <EmptyState
@@ -40,8 +55,8 @@ function NotificationsPage() {
         {notifications.map((n) => (
           <div key={n.id} className="rounded-xl border border-border bg-card p-5">
             <p className="font-semibold text-foreground">{n.title}</p>
-            <p className="mt-1 text-sm text-muted-foreground">{n.body}</p>
-            <p className="mt-2 text-xs text-muted-foreground">{n.date}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{n.message}</p>
+            <p className="mt-2 text-xs text-muted-foreground">{new Date(n.createdAt).toLocaleString()}</p>
           </div>
         ))}
       </div>

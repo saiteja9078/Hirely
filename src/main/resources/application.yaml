@@ -1,16 +1,11 @@
+server:
+  port: 8081
 spring:
   mail:
     host: smtp.gmail.com
     port: 587
     username: akagami.no.shanks71821@gmail.com
-    password: waogsatyjbbmksev
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-  application:
+    password: waogsatyjbbmksevon
     name: Hirely
   datasource:
     url: jdbc:postgresql://localhost:5432/hirely?reWriteBatchedInserts=true
@@ -25,7 +20,7 @@ spring:
       max-lifetime: 1800000
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
@@ -47,6 +42,8 @@ management:
       exposure:
         include: mappings
 app:
+  cors:
+    allowed-origin: http://localhost:8080
   upload:
     resume:
       root-dir: uploads

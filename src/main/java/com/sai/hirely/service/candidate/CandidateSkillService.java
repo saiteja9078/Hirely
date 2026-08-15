@@ -15,25 +15,22 @@ import com.sai.hirely.repository.skill.SkillRepo;
 import com.sai.hirely.service.skill.SkillService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.RequestToViewNameTranslator;
 
 import java.util.*;
 
 @Service
 public class CandidateSkillService {
 
-    private final RequestToViewNameTranslator requestToViewNameTranslator;
     private CandidateSkillRepo candidateSkillsRepo;
     private SkillRepo skillsRepo;
     private SkillService skillService;
     private CandidateRepo candidateRepo;
 
-    public CandidateSkillService(CandidateSkillRepo skillRepo, CandidateRepo candidateRepo, SkillService skillService, SkillRepo skillsRepo, RequestToViewNameTranslator requestToViewNameTranslator) {
+    public CandidateSkillService(CandidateSkillRepo skillRepo, CandidateRepo candidateRepo, SkillService skillService, SkillRepo skillsRepo) {
         this.skillService = skillService;
         this.candidateSkillsRepo = skillRepo;
         this.candidateRepo = candidateRepo;
         this.skillsRepo = skillsRepo;
-        this.requestToViewNameTranslator = requestToViewNameTranslator;
     }
     @Transactional(readOnly = true)
     public List<CandidateSkillDto> findAllByCandidateId(Long candidateId) {
@@ -42,24 +39,40 @@ public class CandidateSkillService {
     @Transactional
     public void addSkills( CandidateSkillsRequest skillsRequest) {
         Candidate candidate = candidateRepo.getReferenceById(skillsRequest.candidateId());
-        List<Skill> skillReferences =  skillsRequest.addExistingSkills()
+        List<ExistingSkill> existing = Optional.ofNullable(skillsRequest.addExistingSkills()).orElseGet(List::of);
+        List<CreateSkill> created = Optional.ofNullable(skillsRequest.createNewSkills()).orElseGet(List::of);
+        List<Skill> skillReferences = existing
                             .stream().map((a) -> skillsRepo.getReferenceById(a.getId())).toList();
-        List<Skill> createdSkills = skillService.createSkills(skillsRequest.createNewSkills());
+        List<Skill> createdSkills = created.isEmpty() ? List.of() : skillService.createSkills(created);
         List<CandidateSkill> candidateSkills = new ArrayList<>();
-        List<ExistingSkill> existing = skillsRequest.addExistingSkills();
-        List<CreateSkill> created = skillsRequest.createNewSkills();
         for(int i=0;i<skillReferences.size();i++) {
-            candidateSkills.add(new CandidateSkill(
-                    candidate, skillReferences.get(i),existing.get(i).getProficiency()
-            ));
+            CandidateSkillKey key = new CandidateSkillKey(skillReferences.get(i).getId(), candidate.getId());
+            if (!candidateSkillsRepo.existsById(key)) {
+                candidateSkills.add(new CandidateSkill(candidate, skillReferences.get(i), existing.get(i).getProficiency()));
+            }
         }
         for(int i=0;i<createdSkills.size();i++) {
-            candidateSkills.add(
-                    new CandidateSkill(candidate,createdSkills.get(i),created.get(i).getProficiency())
-            );
+            CandidateSkillKey key = new CandidateSkillKey(createdSkills.get(i).getId(), candidate.getId());
+            if (!candidateSkillsRepo.existsById(key)) {
+                candidateSkills.add(new CandidateSkill(candidate, createdSkills.get(i), created.get(i).getProficiency()));
+            }
         }
-        candidateSkillsRepo.saveAll(candidateSkills);
+        if (!candidateSkills.isEmpty()) {
+            candidateSkillsRepo.saveAll(candidateSkills);
+        }
      }
+
+    @Transactional
+    public void addExistingSkillIds(Long candidateId, List<Long> skillIds) {
+        if (skillIds == null || skillIds.isEmpty()) {
+            return;
+        }
+        List<ExistingSkill> existingSkills = skillIds.stream()
+                .distinct()
+                .map(skillId -> new ExistingSkill(skillId, Proficiency.BEGINNER))
+                .toList();
+        addSkills(new CandidateSkillsRequest(candidateId, existingSkills, List.of()));
+    }
 
     public void updateSkill(CandidateSkillKey candidateSkillId, Proficiency proficiency) {
         CandidateSkill skill = candidateSkillsRepo.findById(candidateSkillId).orElseThrow(

@@ -57,11 +57,16 @@ public class JobPostingService {
     }
     @Transactional
     public JobPosting createJobPosting(JobPostingRequest request) {
+        return createJobPosting(request, request.companyId(), request.hiringManagerId());
+    }
+
+    @Transactional
+    public JobPosting createJobPosting(JobPostingRequest request, Long companyId, Long hiringManagerId) {
         List<JobCreateSkill> createSkills = request.createSkills();
         List<JobExistingSkill> existingSkills = request.existingSkills();
 
         List<JobSkillRequirement> skillRequirements = new ArrayList<>();
-        JobPosting posting = postingRepo.save(getJobPosting(request));
+        JobPosting posting = postingRepo.save(getJobPosting(request, companyId, hiringManagerId));
         if(createSkills!=null) {
             List<Skill> skills =
                     skillService.createSkills(createSkills);
@@ -92,9 +97,9 @@ public class JobPostingService {
 
         // Notify candidates with matching role interests
         if (fullPosting.getRole() != null) {
-            List<com.sai.hirely.service.candidate.CandidateInterests> interests = 
-                candidateInterestsRepo.findByIdRoleId(fullPosting.getRole().getId());
-            for (com.sai.hirely.service.candidate.CandidateInterests interest : interests) {
+            List<com.sai.hirely.models.candidate.CandidateInterests> interests = 
+                    candidateInterestsRepo.findByIdRoleId(fullPosting.getRole().getId());
+            for (com.sai.hirely.models.candidate.CandidateInterests interest : interests) {
                 candidateRepo.findById(interest.getId().getCandidateId()).ifPresent(candidate -> {
                     emailService.sendJobPostedEmail(candidate.getEmail(), candidate.getFirstName(), fullPosting);
                 });
@@ -104,10 +109,12 @@ public class JobPostingService {
         return fullPosting;
     }
 
-    public JobPosting getJobPosting(JobPostingRequest request) {
+    public JobPosting getJobPosting(JobPostingRequest request, Long companyId, Long hiringManagerId) {
         JobPosting posting = new JobPosting();
-        posting.setCompany(companyRepo.getReferenceById(request.companyId()));
-        posting.setHiringManager(hrRepo.getReferenceById(request.hiringManagerId()));
+        posting.setCompany(companyRepo.getReferenceById(companyId));
+        if (hiringManagerId != null) {
+            posting.setHiringManager(hrRepo.getReferenceById(hiringManagerId));
+        }
         posting.setDescription(request.description());
         posting.setMinimumExperienceInMonths(request.minimumExperienceInMonths());
         posting.setTitle(request.title());
@@ -117,8 +124,18 @@ public class JobPostingService {
         posting.setPostedAt(request.postedAt());
         posting.setExpiresAt(request.expiresAt());
         posting.setLocation(request.location());
-        posting.setRole(roleRepo.getReferenceById(request.roleId()));
+        if (request.createRoleName() != null && !request.createRoleName().isBlank()) {
+            com.sai.hirely.models.utils.RoleEntity newRole = roleRepo.findByName(request.createRoleName().trim());
+            if (newRole == null) {
+                newRole = roleRepo.save(new com.sai.hirely.models.utils.RoleEntity(request.createRoleName().trim()));
+            }
+            posting.setRole(newRole);
+        } else if (request.roleId() != null) {
+            posting.setRole(roleRepo.getReferenceById(request.roleId()));
+        }
         posting.setWorkMode(request.workMode());
+        posting.setWorkingHoursPerDay(request.workingHoursPerDay());
+        posting.setType(request.type());
         return posting;
     }
 
@@ -128,6 +145,16 @@ public class JobPostingService {
 
     public Page<JobCard> getPage(JobFilterRequest filterRequest, Pageable pageable) {
         return jobCaRepo.getJobCards(pageable,filterRequest);
+    }
+
+    @Transactional(readOnly = true)
+    public List<JobPosting> findByCompanyId(Long companyId) {
+        return postingRepo.findWholeObjectGraphByCompanyId(companyId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<JobPosting> findByHiringManagerId(Long hiringManagerId) {
+        return postingRepo.findWholeObjectGraphByHiringManagerId(hiringManagerId);
     }
 
     @Transactional

@@ -1,0 +1,3 @@
+- Add bookmark job functionality
+- Add 'not interested' / dislike job functionality
+- Add 'My jobs' page/functionality for candidates

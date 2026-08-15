@@ -15,11 +15,14 @@ export interface Job {
   easyApply: boolean;
   postedAt: string;
   description: string;
+  skills: { name: string; required: boolean }[];
+  experience?: string;
   responsibilities: string[];
   benefits: string[];
 }
 
 export interface Company {
+  backendId?: number;
   slug: string;
   name: string;
   industry: string;

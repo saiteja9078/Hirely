@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
@@ -43,10 +44,6 @@ public class CompanyReviewService {
     }
 
     public CompanyReviewResponse addReview(Long candidateId, Long companyId, CompanyReviewRequest request) {
-        if (!candidateExperienceRepo.existsByCandidateIdAndCompanyId(candidateId, companyId)) {
-            throw new NotEligibleToReviewException("Candidate has not worked at this company.");
-        }
-
         Candidate candidate = candidateRepo.findById(candidateId)
                 .orElseThrow(() -> new EntityNotFoundException("Candidate", candidateId));
         Company company = companyRepo.findById(companyId)
@@ -57,6 +54,7 @@ public class CompanyReviewService {
         review.setStars(request.stars());
         review.setCandidate(candidate);
         review.setCompany(company);
+        review.setCreatedAt(LocalDateTime.now());
 
         review = reviewRepo.save(review);
         return reviewMapper.toResponse(review);

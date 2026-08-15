@@ -7,6 +7,10 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.sai.hirely.security.CurrentUser;
+import com.sai.hirely.security.details.AccountType;
+import com.sai.hirely.security.details.CustomUserDetails;
 
 import java.util.List;
 
@@ -24,10 +28,11 @@ public class CompanyReviewApi {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CompanyReviewResponse addReview(
-            @RequestParam Long candidateId,
+            @AuthenticationPrincipal CustomUserDetails user,
             @RequestParam Long companyId,
             @Valid @RequestBody CompanyReviewRequest request) {
-        return reviewService.addReview(candidateId, companyId, request);
+        CurrentUser.require(user, AccountType.CANDIDATE);
+        return reviewService.addReview(user.getId(), companyId, request);
     }
 
     @GetMapping("/company/{companyId}")
@@ -38,8 +43,10 @@ public class CompanyReviewApi {
     @DeleteMapping("/{reviewId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReview(
+            @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long reviewId,
-            @RequestParam Long candidateId) {
-        reviewService.deleteReview(reviewId, candidateId);
+            @RequestParam(required = false) Long candidateId) {
+        CurrentUser.require(user, AccountType.CANDIDATE);
+        reviewService.deleteReview(reviewId, user.getId());
     }
 }

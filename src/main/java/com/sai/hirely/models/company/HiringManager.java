@@ -13,11 +13,10 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "hiring_managers")
-public class HiringManager
-{
+public class HiringManager {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "hr_seq")
-    @SequenceGenerator(name = "hr_seq",allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hr_seq")
+    @SequenceGenerator(name = "hr_seq", allocationSize = 50)
     private Long id;
     private String firstName;
     private String lastName;
@@ -32,7 +31,6 @@ public class HiringManager
     @JoinColumn(name = "department_id")
     private Department hiringDepartment;
 
-    @OneToMany(mappedBy = "hiringManager")
+    @OneToMany(mappedBy = "hiringManager", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<JobPosting> jobPostings;
 }
-

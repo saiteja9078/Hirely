@@ -10,6 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface CompanyReviewMapper {
     @Mapping(source = "candidate.id", target = "candidateId")
+    @Mapping(target = "candidateName", expression = "java(review.getCandidate().getFirstName() + \" \" + review.getCandidate().getLastName())")
     @Mapping(source = "company.id", target = "companyId")
     CompanyReviewResponse toResponse(CompanyReview review);
 

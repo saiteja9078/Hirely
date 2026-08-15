@@ -1,17 +1,40 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { CheckCircle2, Flag } from "lucide-react";
 import { useEffect, useState } from "react";
-import { candidate, getJob } from "@/data/mock";
+import {
+  applyToJob,
+  currentUserId,
+  formatErrorMessage,
+  getCurrentCandidate,
+  getJob,
+  getResumes,
+  type Candidate,
+  type Resume,
+} from "@/lib/api";
 
 export const Route = createFileRoute("/apply/$jobId")({
-  loader: ({ params }) => {
-    const job = getJob(params.jobId);
-    if (!job) throw notFound();
-    return { job };
+  beforeLoad: () => { if (typeof window === "undefined") return;
+    const token = localStorage.getItem("hirely-token");
+    const role = localStorage.getItem("hirely-role");
+    if (!token || role !== "candidate") {
+      throw redirect({ to: "/signin" });
+    }
+  },
+  loader: async ({ params }) => {
+    try {
+      return { job: await getJob(params.jobId) };
+    } catch {
+      throw notFound();
+    }
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: "Application unavailable — Hirely" }, { name: "robots", content: "noindex" }] };
+      return {
+        meta: [
+          { title: "Application unavailable — Hirely" },
+          { name: "robots", content: "noindex" },
+        ],
+      };
     }
     const title = `Apply: ${loaderData.job.title} — Hirely`;
     const description = `Review and submit your application for ${loaderData.job.title} at ${loaderData.job.company}.`;
@@ -29,13 +52,52 @@ export const Route = createFileRoute("/apply/$jobId")({
 
 function ApplyPage() {
   const { job } = Route.useLoaderData();
-  const [stage, setStage] = useState<"preparing" | "review" | "submitted">("preparing");
+  const [candidate, setCandidate] = useState<Candidate | null>(null);
+  const [resumes, setResumes] = useState<Resume[]>([]);
+  const [stage, setStage] = useState<"review" | "submitted">("review");
   const [alerts, setAlerts] = useState(false);
+  const [coverLetter, setCoverLetter] = useState("");
+  const [selectedResumeId, setSelectedResumeId] = useState<number | null>(null);
+
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setStage("review"), 1400);
-    return () => clearTimeout(t);
+    getCurrentCandidate()
+      .then((c) => {
+        setCandidate(c);
+        getResumes().then((rs) => {
+          setResumes(rs);
+          if (rs.length > 0) {
+            setSelectedResumeId(rs[0].id);
+          }
+        }).catch(() => []);
+      })
+      .catch(() => setCandidate(null));
   }, []);
+
+  async function submit() {
+    const candidateId = currentUserId();
+    if (!candidateId) {
+      setError("Please sign in as a candidate before applying.");
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
+    try {
+      await applyToJob(job.id, candidateId, coverLetter, selectedResumeId || undefined, alerts);
+      setStage("submitted");
+    } catch (e) {
+      setError(formatErrorMessage(e, "Unable to submit application"));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const name = candidate ? `${candidate.firstName} ${candidate.lastName}` : "Candidate";
+  const location = candidate?.location
+    ? [candidate.location.city, candidate.location.state, candidate.location.country].filter(Boolean).join(", ")
+    : "India";
 
   return (
     <div className="mx-auto max-w-[640px] px-4 py-10 sm:px-6">
@@ -50,7 +112,9 @@ function ApplyPage() {
         {stage === "submitted" ? (
           <div className="py-10 text-center">
             <CheckCircle2 className="mx-auto size-14 text-success" />
-            <h2 className="mt-6 font-display text-2xl font-bold text-foreground">Application submitted</h2>
+            <h2 className="mt-6 font-display text-2xl font-bold text-foreground">
+              Application submitted
+            </h2>
             <p className="mt-3 text-[15px] text-muted-foreground">
               Your application was sent to {job.company}. You can track it from your dashboard.
             </p>
@@ -63,74 +127,78 @@ function ApplyPage() {
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-end">
-              <Link to="/dashboard" className="font-semibold text-primary hover:underline">
-                Save and close
-              </Link>
-            </div>
-            <div className="mt-4 flex items-center gap-4">
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
-                <div className="h-full w-full rounded-full bg-primary" />
-              </div>
-              <span className="text-sm text-muted-foreground">100%</span>
-            </div>
-
-            {stage === "preparing" ? (
-              <div className="py-20 text-center">
-                <ResumeIllustration />
-                <p className="mt-6 font-display text-xl font-bold text-foreground">Preparing review</p>
-                <div className="mx-auto mt-6 h-2.5 w-64 overflow-hidden rounded-full border border-border">
-                  <div className="h-full w-1/5 animate-pulse rounded-full bg-primary" />
-                </div>
-              </div>
-            ) : (
-              <div className="mt-8 space-y-8">
+            <div className="space-y-8">
                 <section>
-                  <h2 className="font-display text-lg font-bold text-foreground">Contact information</h2>
+                  <h2 className="font-display text-lg font-bold text-foreground">
+                    Contact information
+                  </h2>
                   <div className="mt-3 rounded-lg border border-border p-4 text-[15px] text-foreground">
-                    <p className="font-semibold">{candidate.name}</p>
-                    <p className="text-muted-foreground">{candidate.email}</p>
-                    <p className="text-muted-foreground">{candidate.phone}</p>
-                    <p className="text-muted-foreground">{candidate.location}</p>
+                    <p className="font-semibold">{name}</p>
+                    <p className="text-muted-foreground">{candidate?.email || "No email"}</p>
+                    <p className="text-muted-foreground">{location}</p>
                   </div>
                 </section>
 
                 <section>
                   <div className="flex items-center justify-between">
                     <h2 className="font-display text-lg font-bold text-foreground">Resume</h2>
-                    <button type="button" className="font-semibold text-primary hover:underline">
-                      Change
-                    </button>
+                    <Link to="/profile" className="font-semibold text-primary hover:underline text-sm">
+                      Manage resumes
+                    </Link>
                   </div>
-                  <div className="mt-3 rounded-lg border border-border p-4 text-[15px] text-foreground">
-                    {candidate.resume?.fileName}
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      Built KV-cache support with separate prefill and decode passes for efficient autoregressive text
-                      generation; trained on a public web dataset with cosine learning-rate decay and mixed precision.
-                    </p>
+                  <div className="mt-3 space-y-3">
+                    {resumes.length > 0 ? (
+                      resumes.map(r => (
+                        <label key={r.id} className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors ${selectedResumeId === r.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
+                          <div className="flex h-5 items-center">
+                            <input 
+                              type="radio" 
+                              name="resume" 
+                              checked={selectedResumeId === r.id} 
+                              onChange={() => setSelectedResumeId(r.id)}
+                              className="text-primary focus:ring-primary h-4 w-4"
+                            />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-[15px] text-foreground">{r.fileName}</p>
+                            {r.extractedText && (
+                              <p className="mt-1 text-xs leading-relaxed text-muted-foreground line-clamp-2">
+                                {r.extractedText}
+                              </p>
+                            )}
+                          </div>
+                        </label>
+                      ))
+                    ) : (
+                      <div className="rounded-lg border border-border p-4 text-[15px] text-foreground">
+                        <p className="text-sm text-muted-foreground">
+                          No resume uploaded. You can upload one under Profile.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </section>
 
                 <section>
-                  <div className="flex items-center justify-between">
-                    <h2 className="font-display text-lg font-bold text-foreground">Supporting documents</h2>
-                    <button type="button" className="font-semibold text-primary hover:underline">
-                      Add
-                    </button>
-                  </div>
-                  <div className="mt-3 rounded-lg border border-border p-5 text-[15px] text-muted-foreground">
-                    No cover letter or additional documents added. This is optional to add.
-                  </div>
+                  <h2 className="font-display text-lg font-bold text-foreground mb-2">
+                    Cover Note (Optional)
+                  </h2>
+                  <textarea
+                    rows={4}
+                    value={coverLetter}
+                    onChange={(e) => setCoverLetter(e.target.value)}
+                    placeholder="Introduce yourself or highlight relevant experience for this role…"
+                    className="w-full rounded-lg border border-input bg-card px-4 py-3 text-[15px] text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                  />
                 </section>
 
                 <section className="flex items-start justify-between gap-6">
                   <div>
                     <h2 className="font-display text-lg font-bold text-foreground">
-                      Get email updates for the latest {job.title.toLowerCase()} jobs in {job.location}
+                      Get email updates for jobs matching this role
                     </h2>
                     <p className="mt-2 text-sm text-muted-foreground">
-                      By creating a job alert, you agree to our Terms. You can change your consent settings at any time
-                      by unsubscribing or as detailed in our terms.
+                      Receive alerts when new jobs are posted that match this role.
                     </p>
                   </div>
                   <button
@@ -144,31 +212,27 @@ function ApplyPage() {
                     }`}
                   >
                     <span
-                      className={`size-6 rounded-full bg-background shadow transition-transform ${
+                      className={`size-6 rounded-full bg-white shadow transition-transform ${
                         alerts ? "translate-x-5" : ""
                       }`}
                     />
                   </button>
                 </section>
 
-                <p className="border-t border-border pt-6 text-sm leading-relaxed text-muted-foreground">
-                  By submitting your application, you agree to our Terms, Cookie &amp; Privacy Policies, and you consent
-                  to your application being transmitted to the employer and processed in accordance with their policies.
-                </p>
-
+                {error && <p className="text-sm text-destructive">{error}</p>}
                 <button
                   type="button"
-                  onClick={() => setStage("submitted")}
-                  className="w-full rounded-lg bg-primary py-4 text-[16px] font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+                  onClick={submit}
+                  disabled={submitting}
+                  className="w-full rounded-lg bg-primary py-4 text-[16px] font-semibold text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
                 >
-                  Submit your application
+                  {submitting ? "Submitting…" : "Submit your application"}
                 </button>
 
                 <p className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                   <Flag className="size-4" /> <span className="underline">Report an issue</span>
                 </p>
-              </div>
-            )}
+            </div>
           </>
         )}
       </div>

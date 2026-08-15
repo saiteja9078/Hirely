@@ -2,5 +2,5 @@ package com.sai.hirely.models.enums;
 
 public enum ApplicationStatus
 {
-    APPLIED,REJECTED,APPROVED
+    APPLIED, SCREENING, INTERVIEW, OFFER, REJECTED, APPROVED
 }

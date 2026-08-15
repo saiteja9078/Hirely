@@ -6,6 +6,8 @@ import com.sai.hirely.dto.job.SortOrder;
 import com.sai.hirely.models.company.Company;
 import com.sai.hirely.models.job.JobPosting;
 import com.sai.hirely.models.job.JobSkillRequirement;
+import com.sai.hirely.models.enums.PostingStatus;
+import com.sai.hirely.models.utils.WorkMode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -45,7 +47,8 @@ public class JobCriteriaApiRepo {
                     root.get("workMode"),
                     root.get("minimumExperienceInMonths"),
                     companyJoin.get("companyProfileUrl"),
-                    companyJoin.get("name")
+                    companyJoin.get("name"),
+                    root.get("type")
                         )
                 );
         if (request.sortField() != null) {
@@ -67,8 +70,14 @@ public class JobCriteriaApiRepo {
                                             Root<JobPosting> root,
                                             CriteriaBuilder cb) {
         List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(root.get("status"), PostingStatus.OPEN));
         if(request.title()!=null) {
-            predicates.add(cb.like(cb.lower(root.get("title")),getLikeString(request.title())));
+            String likeStr = getLikeString(request.title());
+            jakarta.persistence.criteria.Join<Object, Object> companyJoin = root.join("company", jakarta.persistence.criteria.JoinType.LEFT);
+            predicates.add(cb.or(
+                cb.like(cb.lower(root.get("title")), likeStr),
+                cb.like(cb.lower(companyJoin.get("name")), likeStr)
+            ));
         }
 
         if(request.companyIds()!=null && !request.companyIds().isEmpty()) {
@@ -96,6 +105,22 @@ public class JobCriteriaApiRepo {
                     cb.like(cb.lower(root.get("location").get("city")),getLikeString(request.city()))
             );
         }
+        if(request.location() != null && !request.location().trim().isEmpty()) {
+            String loc = request.location().trim();
+            String likeLoc = getLikeString(loc);
+            
+            Predicate locPredicate = cb.or(
+                cb.like(cb.lower(root.get("location").get("city")), likeLoc),
+                cb.like(cb.lower(root.get("location").get("state")), likeLoc),
+                cb.like(cb.lower(root.get("location").get("country")), likeLoc)
+            );
+            
+            if (loc.equalsIgnoreCase("remote")) {
+                locPredicate = cb.or(locPredicate, cb.equal(root.get("workMode"), WorkMode.REMOTE));
+            }
+            
+            predicates.add(locPredicate);
+        }
         if(request.skillIds()!=null && !request.skillIds().isEmpty()) {
             Join<JobPosting, JobSkillRequirement> join = root.join("skillRequirements", JoinType.INNER);
             predicates.add(
@@ -106,6 +131,9 @@ public class JobCriteriaApiRepo {
             predicates.add(
                     cb.equal(root.get("workMode"),request.workMode())
             );
+        }
+        if(request.types()!=null && !request.types().isEmpty()) {
+            predicates.add(root.get("type").in(request.types()));
         }
         if(request.salaryGe()!=null) {
             predicates.add(

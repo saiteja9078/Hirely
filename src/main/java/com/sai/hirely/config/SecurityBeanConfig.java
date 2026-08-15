@@ -4,6 +4,7 @@ import com.sai.hirely.security.details.CompanyDetailsService;
 import com.sai.hirely.security.details.HiringManagerDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,6 +39,7 @@ public class SecurityBeanConfig {
         return authenticationProvider;
     }
 
+    @Profile("dev")
     @Bean("inMemoryUserDetails") // only for testing
     public UserDetailsService getUserDetails(PasswordEncoder encoder) {
         UserDetails details1 =  User.builder()
@@ -57,7 +59,6 @@ public class SecurityBeanConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        System.out.println("calling bean");
         return new BCryptPasswordEncoder();
     }
 

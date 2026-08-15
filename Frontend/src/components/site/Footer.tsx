@@ -6,7 +6,6 @@ const columns = [
     title: "Job seekers",
     links: [
       { to: "/jobs", label: "Find jobs" },
-      { to: "/salaries", label: "Salary guide" },
       { to: "/companies", label: "Company reviews" },
       { to: "/profile", label: "Your profile" },
     ],

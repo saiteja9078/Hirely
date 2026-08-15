@@ -45,10 +45,8 @@ public abstract class JobPostingMapper {
                 posting.getPostedAt(),
                 posting.getExpiresAt(),
                 posting.getLocation(),
-                new RoleDto(
-                        posting.getRole().getId(),
-                        posting.getRole().getName()
-                ),
+                posting.getRole() == null ? null : new RoleDto(
+                        posting.getRole().getId(), posting.getRole().getName()),
                 posting.getWorkMode(),
                 posting.getWorkingHoursPerDay(),
                 posting.getType()

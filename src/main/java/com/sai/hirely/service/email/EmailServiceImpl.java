@@ -14,6 +14,9 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
 
+    @org.springframework.beans.factory.annotation.Value("${app.frontend.url:http://localhost:8080}")
+    private String frontendUrl;
+
     @Autowired
     public EmailServiceImpl(JavaMailSender mailSender) {
         this.mailSender = mailSender;
@@ -27,8 +30,8 @@ public class EmailServiceImpl implements EmailService {
                 "Welcome to Hirely!",
                 "Hi " + name + ",",
                 "We are thrilled to have you on board as a <strong>" + role + "</strong>! Hirely is dedicated to connecting top talent with amazing opportunities.",
-                "Explore Dashboard",
-                "#"
+                "Explore Hirely",
+                frontendUrl + "/jobs"
         );
         sendHtmlEmail(to, subject, htmlBody);
     }
@@ -43,7 +46,7 @@ public class EmailServiceImpl implements EmailService {
                 "A new job for <strong>" + posting.getTitle() + "</strong> has been posted by <strong>" + posting.getCompany().getName() + "</strong>. " +
                         "Since this matches your role preferences, we wanted to let you know right away!",
                 "View Job Details",
-                "#"
+                frontendUrl + "/jobs?jobId=" + posting.getId()
         );
         sendHtmlEmail(to, subject, htmlBody);
     }
@@ -57,8 +60,8 @@ public class EmailServiceImpl implements EmailService {
                 "Hi " + candidateName + ",",
                 "Your application for the <strong>" + jobTitle + "</strong> position at <strong>" + companyName + "</strong> has been received successfully. " +
                         "The hiring team will review your profile and get back to you.",
-                "View My Applications",
-                "#"
+                "View Jobs",
+                frontendUrl + "/jobs"
         );
         sendHtmlEmail(to, subject, htmlBody);
     }
@@ -96,7 +99,7 @@ public class EmailServiceImpl implements EmailService {
                 "<h2>" + header + "</h2>" +
                 "<p>" + greeting + "</p>" +
                 "<p>" + message + "</p>" +
-                "<a href='" + btnLink + "' class='button'>" + btnText + "</a>" +
+                "<a href=\"" + btnLink + "\" class=\"button\">" + btnText + "</a>" +
                 "<div class='footer'>&copy; " + java.time.Year.now().getValue() + " Hirely. All rights reserved.</div>" +
                 "</div>" +
                 "</body></html>";

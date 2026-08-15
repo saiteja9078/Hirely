@@ -37,7 +37,7 @@ public class CandidateExperience
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "company_id")
+    @JoinColumn(name = "company_id",nullable = true)
     private Company company;
 
     @ManyToOne

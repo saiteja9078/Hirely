@@ -22,19 +22,15 @@ import org.hibernate.annotations.Check;
 @Getter
 @Setter
 @Check(constraints = "salary_lower <= salary_higher")
-@Table(
-        name = "job_postings",
-        indexes = {
-                @Index(name = "company_index", columnList = "company_id"),
-                @Index(name = "role_index", columnList = "role_id,status"),
-                @Index(name = "salary_index", columnList = "salary_higher,salary_lower")
-        }
-)
-public class JobPosting
-{
+@Table(name = "job_postings", indexes = {
+        @Index(name = "company_index", columnList = "company_id"),
+        @Index(name = "role_index", columnList = "role_id,status"),
+        @Index(name = "salary_index", columnList = "salary_higher,salary_lower")
+})
+public class JobPosting {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "job_posting_seq")
-    @SequenceGenerator(name = "job_posting_seq",allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "job_posting_seq")
+    @SequenceGenerator(name = "job_posting_seq", allocationSize = 50)
     private Long id;
 
     private String title;
@@ -42,8 +38,8 @@ public class JobPosting
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private int salaryLower=0;
-    private int salaryHigher=0;
+    private int salaryLower = 0;
+    private int salaryHigher = 0;
 
     @Enumerated(EnumType.STRING)
     private PostingStatus status;
@@ -52,6 +48,7 @@ public class JobPosting
     @JoinColumn(name = "hiring_manager_id")
     private HiringManager hiringManager;
 
+    @Enumerated(EnumType.STRING)
     private JobType type;
 
     private Short workingHoursPerDay = 8;
@@ -86,6 +83,7 @@ public class JobPosting
         this.skillRequirements.add(skillRequirement);
         skillRequirement.setJobPosting(this);
     }
+
     public void addApplication(JobApplication application) {
         this.jobApplications.add(application);
         application.setJobPosting(this);
