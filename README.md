@@ -322,8 +322,8 @@ erDiagram
 ## Deployment Architecture
 
 ### Infrastructure Diagram
-
 ```mermaid
+
 flowchart TB
     Internet(("Internet"))
 
@@ -333,20 +333,25 @@ flowchart TB
         CDN["Static CDN\n• JS bundles\n• CSS\n• favicon"]
     end
 
-    subgraph EC2["AWS EC2 (eu-north-1)"]
+    DNS["DuckDNS\nhirely-api.duckdns.org"]
+
+    subgraph EC2["AWS EC2 (eu-north-1) — t3.micro"]
         direction TB
-        Spring["Spring Boot App (port 8080)\n• REST API\n• JWT Auth\n• File storage\n• Email dispatch"]
+        Nginx["Nginx :80 / :443\n• TLS termination (Let's Encrypt/Certbot)\n• Reverse proxy"]
+        Spring["Spring Boot :8080 (localhost only)\n• REST API\n• JWT Auth\n• File storage\n• Email dispatch\n(supervised by systemd)"]
         PG[("PostgreSQL\nlocalhost:5432\nhirely_db")]
         FS[("Filesystem\n/opt/myapp/uploads/\n• resumes/\n• images/")]
+
+        Nginx -->|"proxy_pass\nhttp://localhost:8080"| Spring
         Spring --> PG
         Spring --> FS
     end
 
-    Internet --> Vercel
-    Internet --> EC2
-    Nitro -->|"HTTPS API calls"| Spring
-```
+    Internet -->|HTTPS| Vercel
+    Nitro -->|"HTTPS API calls"| DNS
+    DNS -->|"resolves to Elastic IP"| Nginx
 
+```
 ### Frontend — Vercel
 
 The frontend is deployed as a **TanStack Start SSR application** on Vercel using the Nitro `vercel` preset.
