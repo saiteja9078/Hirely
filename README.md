@@ -127,12 +127,15 @@ Hirely/
 
 The backend follows a **layered architecture**:
 
-```
-Controller (apis/) → Service (service/) → Repository (repository/) → Database
-     ↕                    ↕
-   DTO (dto/)         Entity (models/)
-     ↕
-  Mapper (mappers/)
+```mermaid
+flowchart LR
+    A["Controller\n(apis/)"] -->|delegates| B["Service\n(service/)"]
+    B -->|queries| C["Repository\n(repository/)"]
+    C -->|reads/writes| D[("PostgreSQL")]
+    A <-->|converts| E["DTO\n(dto/)"]
+    B <-->|uses| F["Entity\n(models/)"]
+    E <-->|maps| G["Mapper\n(mappers/)"]
+    G <-->|maps| F
 ```
 
 - **Controllers** handle HTTP requests, delegate to services, and return DTOs.
@@ -157,40 +160,26 @@ The frontend is a **server-side rendered (SSR)** React application:
 
 ### Authentication Flow
 
-```
-┌──────────┐     POST /login/{type}      ┌─────────────┐
-│  Client   │ ──────────────────────────→ │  Login API   │
-│ (Browser) │     { email, password }     │  Controller  │
-└──────────┘                              └──────┬──────┘
-                                                 │
-                                    ┌────────────▼───────────┐
-                                    │ DaoAuthenticationProvider│
-                                    │  (per account type)     │
-                                    └────────────┬───────────┘
-                                                 │
-                                    ┌────────────▼───────────┐
-                                    │ UserDetailsServiceFactory│
-                                    │  ├─ CandidateDetails    │
-                                    │  ├─ CompanyDetails      │
-                                    │  └─ HiringMgrDetails    │
-                                    └────────────┬───────────┘
-                                                 │
-                                    ┌────────────▼───────────┐
-                                    │    BCrypt Verification   │
-                                    └────────────┬───────────┘
-                                                 │ (match)
-                                    ┌────────────▼───────────┐
-                                    │     JwtService          │
-                                    │  generateToken(user)    │
-                                    │  Claims: roles, type,   │
-                                    │          userId, sub,    │
-                                    │          exp (24h)       │
-                                    └────────────┬───────────┘
-                                                 │
-┌──────────┐     { token, username }     ┌──────▼──────┐
-│  Client   │ ←───────────────────────── │   Response   │
-│ (Browser) │   stored in localStorage   └─────────────┘
-└──────────┘
+```mermaid
+sequenceDiagram
+    participant Client as Client (Browser)
+    participant Login as Login API Controller
+    participant Auth as DaoAuthenticationProvider
+    participant Factory as UserDetailsServiceFactory
+    participant BCrypt as BCrypt Verification
+    participant JWT as JwtService
+
+    Client->>Login: POST /login/{type}<br>{email, password}
+    Login->>Auth: authenticate(credentials)
+    Auth->>Factory: getUserDetailsService(type)
+    Factory-->>Auth: CandidateDetails / CompanyDetails / HiringMgrDetails
+    Auth->>BCrypt: verify password
+    BCrypt-->>Auth: ✓ match
+    Auth-->>Login: Authentication object
+    Login->>JWT: generateToken(userDetails)
+    Note over JWT: Claims: roles, type,<br>userId, sub, exp (24h)
+    JWT-->>Login: signed JWT
+    Login-->>Client: {token, username}<br>stored in localStorage
 ```
 
 **Key security decisions:**
@@ -334,37 +323,28 @@ erDiagram
 
 ### Infrastructure Diagram
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                           INTERNET                                  │
-└───────────────┬───────────────────────────────────┬─────────────────┘
-                │                                   │
-    ┌───────────▼───────────┐           ┌───────────▼───────────┐
-    │       Vercel           │           │      AWS EC2           │
-    │   (Frontend SSR)       │           │   (eu-north-1)         │
-    │                        │           │                        │
-    │  ┌──────────────────┐  │   HTTPS   │  ┌──────────────────┐  │
-    │  │ Nitro Serverless  │  │ ────────→ │  │ Spring Boot App  │  │
-    │  │ Function          │  │  API      │  │ (port 8080)      │  │
-    │  │                   │  │  calls    │  │                   │  │
-    │  │ • SSR rendering   │  │           │  │ • REST API        │  │
-    │  │ • Static assets   │  │           │  │ • JWT Auth        │  │
-    │  │ • CSRF protection │  │           │  │ • File storage    │  │
-    │  └──────────────────┘  │           │  │ • Email dispatch   │  │
-    │                        │           │  └────────┬─────────┘  │
-    │  Static CDN:           │           │           │            │
-    │  • JS bundles          │           │  ┌────────▼─────────┐  │
-    │  • CSS                 │           │  │   PostgreSQL      │  │
-    │  • favicon             │           │  │  (localhost:5432) │  │
-    │                        │           │  │   hirely_db       │  │
-    └────────────────────────┘           │  └──────────────────┘  │
-                                         │                        │
-                                         │  /opt/myapp/           │
-                                         │  ├── app.jar           │
-                                         │  └── uploads/          │
-                                         │      ├── resumes/      │
-                                         │      └── images/       │
-                                         └────────────────────────┘
+```mermaid
+flowchart TB
+    Internet(("Internet"))
+
+    subgraph Vercel["Vercel (Frontend SSR)"]
+        direction TB
+        Nitro["Nitro Serverless Function\n• SSR rendering\n• CSRF protection"]
+        CDN["Static CDN\n• JS bundles\n• CSS\n• favicon"]
+    end
+
+    subgraph EC2["AWS EC2 (eu-north-1)"]
+        direction TB
+        Spring["Spring Boot App (port 8080)\n• REST API\n• JWT Auth\n• File storage\n• Email dispatch"]
+        PG[("PostgreSQL\nlocalhost:5432\nhirely_db")]
+        FS[("Filesystem\n/opt/myapp/uploads/\n• resumes/\n• images/")]
+        Spring --> PG
+        Spring --> FS
+    end
+
+    Internet --> Vercel
+    Internet --> EC2
+    Nitro -->|"HTTPS API calls"| Spring
 ```
 
 ### Frontend — Vercel
