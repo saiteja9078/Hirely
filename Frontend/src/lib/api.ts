@@ -439,7 +439,7 @@ export async function updateCandidate(data: Partial<Candidate>) {
 }
 
 export type CandidateSkill = {
-  skillId: number;
+  id: number;
   name: string;
   proficiency: "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "EXPERT";
 };
@@ -449,13 +449,13 @@ export async function getCandidateSkills() {
 }
 
 export async function saveCandidateSkills(
-  addExistingSkills: { skillId: number; proficiency: string }[],
+  addExistingSkills: { id: number; proficiency: string }[],
   createNewSkills: { name: string; proficiency: string }[],
 ) {
   return request<void>("/api/candidate-skills/me", {
     method: "POST",
     body: JSON.stringify({ 
-      addExistingSkills: addExistingSkills.map(s => ({ id: s.skillId, proficiency: s.proficiency })), 
+      addExistingSkills: addExistingSkills.map(s => ({ id: s.id, proficiency: s.proficiency })), 
       createNewSkills 
     }),
   });

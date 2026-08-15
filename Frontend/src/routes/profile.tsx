@@ -162,10 +162,9 @@ function ProfilePage() {
     }
     
     try {
-      const match = catalogSkills.find(s => s.name.toLowerCase() === customSkillName.trim().toLowerCase());
-      
+      const match = catalogSkills.find((s) => s.name.toLowerCase() === customSkillName.trim().toLowerCase());
       if (match) {
-        await saveCandidateSkills([{ skillId: match.id, proficiency }], []);
+        await saveCandidateSkills([{ id: match.id, proficiency }], []);
       } else {
         await saveCandidateSkills([], [{ name: customSkillName.trim(), proficiency }]);
       }
@@ -183,7 +182,7 @@ function ProfilePage() {
   async function handleDeleteSkill(skillId: number) {
     try {
       await deleteCandidateSkill(skillId);
-      setSkills(skills.filter((s) => s.skillId !== skillId));
+      setSkills(skills.filter((s) => s.id !== skillId));
       toast.success("Skill removed.");
     } catch (err) {
       toast.error(formatErrorMessage(err, "Failed to remove skill"));
@@ -536,14 +535,14 @@ function ProfilePage() {
         ) : (
           skills.map((s) => (
             <span
-              key={s.skillId}
+              key={s.id}
               className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm text-foreground"
             >
               <span className="font-medium">{s.name}</span>
               <span className="text-xs text-muted-foreground lowercase">({s.proficiency})</span>
               <button
                 type="button"
-                onClick={() => handleDeleteSkill(s.skillId)}
+                onClick={() => handleDeleteSkill(s.id)}
                 className="text-muted-foreground hover:text-destructive"
               >
                 ×
