@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
+import { SlidersHorizontal, X } from "lucide-react";
 import { SearchBar } from "@/components/site/SearchBar";
 import { JobCard } from "@/components/site/JobCard";
 import { JobDetailPanel } from "@/components/site/JobDetailPanel";
@@ -52,6 +53,7 @@ const dateFilters = [
 
 
 function JobsPage() {
+  const [showFilters, setShowFilters] = useState(false);
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -154,8 +156,48 @@ function JobsPage() {
         </div>
       </div>
 
+      {/* Mobile filter toggle button */}
+      <div className="sticky top-16 z-30 flex items-center gap-3 border-b border-border bg-background px-4 py-2 sm:px-6 lg:hidden">
+        <button
+          type="button"
+          onClick={() => setShowFilters(v => !v)}
+          className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+        >
+          <SlidersHorizontal className="size-4" />
+          Filters
+        </button>
+        {(types.length > 0 || remoteOnly || datePostedDays || salaryGe || salaryLe || skillIds.length > 0 || roleId || companyIds.length > 0) && (
+          <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+            Active
+          </span>
+        )}
+      </div>
+
+      {/* Mobile filter overlay backdrop */}
+      {showFilters && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          onClick={() => setShowFilters(false)}
+        />
+      )}
+
       <div className="mx-auto grid max-w-[1400px] gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,420px)_minmax(0,1fr)]">
-        <aside className="space-y-6">
+        <aside className={`space-y-6 ${
+          showFilters
+            ? 'fixed inset-y-0 left-0 z-50 w-[280px] overflow-y-auto bg-background p-4 shadow-xl lg:relative lg:inset-auto lg:z-auto lg:w-auto lg:overflow-visible lg:p-0 lg:shadow-none'
+            : 'hidden lg:block'
+        }`}>
+          {/* Mobile close button */}
+          <div className="flex items-center justify-between lg:hidden">
+            <span className="text-sm font-semibold text-foreground">Filters</span>
+            <button
+              type="button"
+              onClick={() => setShowFilters(false)}
+              className="inline-flex size-8 items-center justify-center rounded-full hover:bg-accent"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
           <FilterGroup title="Job type">
             {jobTypeFilters.map((t) => (
               <label
@@ -277,6 +319,7 @@ function JobsPage() {
             ))}
           </FilterGroup>
         </aside>
+
 
         <section className="space-y-4">
           {loading && <p className="text-sm text-muted-foreground">Loading live jobs…</p>}

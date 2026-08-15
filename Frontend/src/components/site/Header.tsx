@@ -135,7 +135,36 @@ export function Header() {
               {item.label}
             </Link>
           ))}
-          {!role && (
+          {role === "candidate" && (
+            <div className="grid grid-cols-2 gap-2 border-b border-border py-3">
+              <Link to="/profile" onClick={() => setOpen(false)} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-accent">
+                <User className="size-4" /> Profile
+              </Link>
+              <Link to="/notifications" onClick={() => setOpen(false)} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-accent">
+                <Bell className="size-4" /> Notifications
+              </Link>
+              <Link to="/messages" onClick={() => setOpen(false)} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-accent">
+                <MessageSquare className="size-4" /> Messages
+              </Link>
+              <Link to="/dashboard" onClick={() => setOpen(false)} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-accent">
+                <Bookmark className="size-4" /> Dashboard
+              </Link>
+            </div>
+          )}
+          {role ? (
+            <div className="flex items-center justify-between pt-3">
+              <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
+                {ROLE_LABELS[role]}
+              </span>
+              <button
+                type="button"
+                onClick={() => { setOpen(false); handleSignOut(); }}
+                className="rounded-lg border border-input px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+              >
+                Sign out
+              </button>
+            </div>
+          ) : (
             <div className="flex gap-3 pt-3">
               <Link to="/signin" onClick={() => setOpen(false)} className="flex-1 rounded-lg border border-input py-2 text-center text-sm font-medium">
                 Sign in

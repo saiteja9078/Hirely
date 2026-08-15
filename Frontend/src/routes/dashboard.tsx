@@ -1,4 +1,4 @@
-import { createFileRoute, Navigate, redirect, Link } from "@tanstack/react-router";
+import { createFileRoute, Navigate, redirect, Link, useNavigate } from "@tanstack/react-router";
 import { Wallet, Briefcase, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRole } from "@/lib/role";
@@ -50,6 +50,7 @@ export const Route = createFileRoute("/dashboard")({
 
 function Dashboard() {
   const { role } = useRole();
+  const dashNavigate = useNavigate();
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const [applications, setApplications] = useState<UserApplication[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -179,7 +180,13 @@ function Dashboard() {
                   key={job.id}
                   job={job}
                   selected={selected?.id === job.id}
-                  onSelect={(j) => setSelectedId(j.id)}
+                  onSelect={(j) => {
+                    setSelectedId(j.id);
+                    // On mobile (no detail panel visible), navigate to job page
+                    if (window.innerWidth < 1024) {
+                      dashNavigate({ to: '/jobs', search: { jobId: Number(j.id) } as any });
+                    }
+                  }}
                 />
               ))}
             </div>
